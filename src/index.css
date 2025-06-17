@@ -58,21 +58,37 @@
   }
 }
 
-/* Custom animations and effects */
+/* Lava-style animations and effects */
 @layer utilities {
-  .animated-gradient {
-    background: linear-gradient(-45deg, #1e40af, #3b82f6, #6366f1, #8b5cf6);
+  .lava-gradient {
+    background: linear-gradient(-45deg, #000000, #1a0000, #330000, #660000, #990000, #cc0000, #330000, #000000);
     background-size: 400% 400%;
-    animation: gradientShift 4s ease infinite;
+    animation: lavaFlow 6s ease infinite;
   }
 
-  .text-gradient {
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+  .lava-text-gradient {
+    background: linear-gradient(135deg, #ff0000, #cc0000, #990000, #ff3333);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
+    animation: lavaTextFlow 4s ease infinite;
+  }
+
+  .glow-red {
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+  }
+
+  .glow-red-soft {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+  }
+
+  .glow-red-hover:hover {
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
+  }
+
+  .lava-pulse {
+    animation: lavaPulse 2s ease-in-out infinite;
   }
 
   .scroll-reveal {
@@ -95,13 +111,68 @@
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   }
 
-  .hover-glow:hover {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-  }
-
   .parallax {
     transform: translateZ(0);
     will-change: transform;
+  }
+
+  .animated-gradient {
+    background: linear-gradient(-45deg, #1e40af, #3b82f6, #6366f1, #8b5cf6);
+    background-size: 400% 400%;
+    animation: gradientShift 4s ease infinite;
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+  }
+}
+
+@keyframes lavaFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 25%;
+  }
+  50% {
+    background-position: 100% 75%;
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes lavaTextFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  33% {
+    background-position: 100% 25%;
+  }
+  66% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes lavaPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(239, 68, 68, 0.8);
+    transform: scale(1.05);
   }
 }
 
