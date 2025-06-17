@@ -1,7 +1,7 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Code, Smartphone, Globe, Database, Cpu } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const projects = [
   {
@@ -61,49 +61,52 @@ const projects = [
 ];
 
 export const Projects = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Abgeschlossen":
-        return "bg-green-100 text-green-800";
+        return "bg-green-900/50 text-green-400 border-green-500/30";
       case "In Entwicklung":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-900/50 text-blue-400 border-blue-500/30";
       case "Planung":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-900/50 text-yellow-400 border-yellow-500/30";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-900/50 text-gray-400 border-gray-500/30";
     }
   };
 
   return (
-    <section id="projects" className="py-20 bg-white">
+    <section id="projects" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Unsere <span className="text-blue-600">Projekte</span>
+        <div ref={titleRef} className={`text-center mb-16 scroll-reveal ${titleVisible ? 'revealed' : ''}`}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Unsere <span className="text-gradient">Projekte</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Von Web-Anwendungen bis hin zu mobilen Apps - wir entwickeln 
             maßgeschneiderte Lösungen für verschiedenste Anforderungen.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
           {projects.map((project, index) => {
             const IconComponent = project.icon;
             return (
               <Card 
                 key={project.id} 
-                className="group hover:shadow-xl transition-all duration-300 border-0 shadow-md hover:-translate-y-2 bg-white"
+                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-blue-500/50 hover-glow"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
                     src={project.image} 
                     alt={project.title}
-                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300 filter brightness-50 group-hover:brightness-75"
                   />
                   <div className="absolute top-4 right-4">
-                    <Badge className={`${getStatusColor(project.status)} font-medium`}>
+                    <Badge className={`${getStatusColor(project.status)} font-medium border`}>
                       {project.status}
                     </Badge>
                   </div>
@@ -114,17 +117,17 @@ export const Projects = () => {
                 
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <IconComponent className="h-6 w-6 text-blue-600" />
+                    <div className="bg-blue-900/50 p-2 rounded-lg border border-blue-500/30">
+                      <IconComponent className="h-6 w-6 text-blue-400" />
                     </div>
-                    <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    <CardTitle className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
                       {project.title}
                     </CardTitle>
                   </div>
                 </CardHeader>
                 
                 <CardContent className="pt-0">
-                  <CardDescription className="text-gray-600 mb-4 leading-relaxed">
+                  <CardDescription className="text-gray-300 mb-4 leading-relaxed">
                     {project.description}
                   </CardDescription>
                   <div className="flex flex-wrap gap-2">
@@ -132,7 +135,7 @@ export const Projects = () => {
                       <Badge 
                         key={tag} 
                         variant="secondary" 
-                        className="bg-gray-100 text-gray-700 hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                        className="bg-gray-800/50 text-gray-300 hover:bg-blue-900/50 hover:text-blue-400 transition-colors border border-gray-700 hover:border-blue-500/30"
                       >
                         {tag}
                       </Badge>

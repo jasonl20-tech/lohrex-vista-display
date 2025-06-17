@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Users, Target, Lightbulb, Award } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const features = [
   {
@@ -26,36 +27,41 @@ const features = [
 ];
 
 export const About = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: featuresRef, isVisible: featuresVisible } = useScrollAnimation();
+  const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
+
   return (
-    <section id="about" className="py-20 bg-gray-50">
+    <section id="about" className="py-20 bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Über <span className="text-blue-600">Lohrex</span>
+        <div ref={titleRef} className={`text-center mb-16 scroll-reveal ${titleVisible ? 'revealed' : ''}`}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Über <span className="text-gradient">Lohrex</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
             Seit Jahren entwickeln wir innovative Softwarelösungen und digitale Produkte. 
             Unser Fokus liegt auf qualitativ hochwertigen, maßgeschneiderten Lösungen, 
             die echten Mehrwert schaffen.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <div ref={featuresRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16 scroll-reveal ${featuresVisible ? 'revealed' : ''}`}>
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
               <Card 
                 key={index}
-                className="text-center border-0 shadow-md hover:shadow-lg transition-shadow duration-300 bg-white"
+                className="text-center border border-gray-800 hover-lift hover-glow transition-all duration-300 bg-black/50 backdrop-blur-sm"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardContent className="pt-8 pb-6">
-                  <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="h-8 w-8 text-blue-600" />
+                  <div className="bg-blue-900/30 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
+                    <IconComponent className="h-8 w-8 text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-xl font-bold text-white mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-300 leading-relaxed">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -64,37 +70,37 @@ export const About = () => {
           })}
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+        <div ref={contentRef} className={`bg-black/70 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 md:p-12 hover-glow scroll-reveal ${contentVisible ? 'revealed' : ''}`}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-6">
+              <h3 className="text-3xl font-bold text-white mb-6">
                 Warum Lohrex wählen?
               </h3>
               <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <div className="bg-blue-600 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-gray-600">
-                    <strong className="text-gray-900">Umfassende Expertise:</strong> Von Frontend bis Backend, 
-                    von Mobile Apps bis Cloud-Infrastruktur.
-                  </p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="bg-blue-600 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-gray-600">
-                    <strong className="text-gray-900">Agile Entwicklung:</strong> Schnelle Prototypen, 
-                    iterative Verbesserungen und enge Zusammenarbeit.
-                  </p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="bg-blue-600 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-gray-600">
-                    <strong className="text-gray-900">Langfristige Partnerschaft:</strong> Support und 
-                    Weiterentwicklung auch nach Projektabschluss.
-                  </p>
-                </div>
+                {[
+                  {
+                    title: "Umfassende Expertise:",
+                    text: "Von Frontend bis Backend, von Mobile Apps bis Cloud-Infrastruktur."
+                  },
+                  {
+                    title: "Agile Entwicklung:",
+                    text: "Schnelle Prototypen, iterative Verbesserungen und enge Zusammenarbeit."
+                  },
+                  {
+                    title: "Langfristige Partnerschaft:",
+                    text: "Support und Weiterentwicklung auch nach Projektabschluss."
+                  }
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start space-x-3">
+                    <div className="bg-blue-600 w-2 h-2 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-300">
+                      <strong className="text-blue-400">{item.title}</strong> {item.text}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-8 text-white">
+            <div className="animated-gradient rounded-xl p-8 text-white">
               <h4 className="text-2xl font-bold mb-4">Unsere Mission</h4>
               <p className="text-blue-100 leading-relaxed mb-6">
                 Wir glauben daran, dass Technologie das Leben und die Arbeit von Menschen 
