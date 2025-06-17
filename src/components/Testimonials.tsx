@@ -1,0 +1,96 @@
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Star, Quote } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+
+const testimonials = [
+  {
+    name: "Sarah Weber",
+    company: "TechStart GmbH",
+    role: "CEO",
+    text: "Lohrex hat unsere Vision perfekt umgesetzt. Die Zusammenarbeit war professionell und das Ergebnis übertrifft unsere Erwartungen.",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=80&h=80&fit=crop&crop=face"
+  },
+  {
+    name: "Michael Schmidt",
+    company: "Digital Solutions AG",
+    role: "CTO",
+    text: "Innovative Lösungen und exzellente technische Umsetzung. Lohrex versteht es, komplexe Anforderungen elegant zu lösen.",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face"
+  },
+  {
+    name: "Lisa Müller",
+    company: "CreativeHub",
+    role: "Marketing Director",
+    text: "Das Design ist atemberaubend und die Performance hervorragend. Unsere Conversion-Rate hat sich verdoppelt!",
+    rating: 5,
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face"
+  }
+];
+
+export const Testimonials = () => {
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollAnimation();
+
+  return (
+    <section className="py-24 bg-gradient-to-b from-black via-gray-900/20 to-black relative overflow-hidden">
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-purple-500 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div ref={titleRef} className={`text-center mb-16 scroll-reveal ${titleVisible ? 'revealed' : ''}`}>
+          <div className="inline-block px-6 py-2 bg-gradient-to-r from-red-900/30 to-orange-900/30 rounded-full border border-red-500/30 mb-6">
+            <span className="text-red-300 font-semibold">Kundenstimmen</span>
+          </div>
+          <h2 className="text-5xl md:text-6xl font-black mb-8">
+            <span className="text-white font-light">Was unsere</span>
+            <br />
+            <span className="modern-lava-text">Kunden sagen</span>
+          </h2>
+        </div>
+
+        <div ref={testimonialsRef} className={`grid grid-cols-1 md:grid-cols-3 gap-8 scroll-reveal ${testimonialsVisible ? 'revealed' : ''}`}>
+          {testimonials.map((testimonial, index) => (
+            <Card 
+              key={index}
+              className="modern-card hover-lift group relative overflow-hidden"
+              style={{ animationDelay: `${index * 200}ms` }}
+            >
+              <CardContent className="pt-8 pb-6 relative z-10">
+                <div className="absolute top-4 right-4 text-red-500/30 group-hover:text-red-500/50 transition-colors">
+                  <Quote size={32} />
+                </div>
+                
+                <div className="flex items-center mb-6">
+                  <img 
+                    src={testimonial.avatar} 
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full border-2 border-red-500/30 mr-4"
+                  />
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-400">{testimonial.role}, {testimonial.company}</p>
+                  </div>
+                </div>
+
+                <div className="flex mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} size={16} className="fill-yellow-500 text-yellow-500" />
+                  ))}
+                </div>
+
+                <p className="text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors">
+                  "{testimonial.text}"
+                </p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
