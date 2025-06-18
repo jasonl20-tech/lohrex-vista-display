@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -67,12 +68,13 @@ export const ContactMessages = () => {
         .delete()
         .eq('id', id);
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: ['contact-messages'] });
       toast.success('Nachricht gelöscht');
       // Reset selected message if it was the deleted one
-      if (selectedMessage && selectedMessage.id === arguments[0]) {
+      if (selectedMessage && selectedMessage.id === deletedId) {
         setSelectedMessage(null);
       }
     },
