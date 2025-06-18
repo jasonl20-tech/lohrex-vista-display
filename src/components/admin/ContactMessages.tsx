@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Mail, Eye, Reply, Clock, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Mail, Eye, Reply, Clock, ArrowUp, ArrowDown, AlertCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -57,6 +57,27 @@ export const ContactMessages = () => {
     },
     onError: (error) => {
       toast.error('Fehler beim Aktualisieren: ' + error.message);
+    }
+  });
+
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('contact_messages')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['contact-messages'] });
+      toast.success('Nachricht gelöscht');
+      // Reset selected message if it was the deleted one
+      if (selectedMessage && selectedMessage.id === arguments[0]) {
+        setSelectedMessage(null);
+      }
+    },
+    onError: (error) => {
+      toast.error('Fehler beim Löschen: ' + error.message);
     }
   });
 
@@ -115,6 +136,10 @@ export const ContactMessages = () => {
     if (selectedMessage?.id === messageId) {
       setSelectedMessage({ ...selectedMessage, priority: priority as 'low' | 'normal' | 'high' });
     }
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    deleteMessageMutation.mutate(messageId);
   };
 
   const getStatusColor = (status: string) => {
@@ -246,9 +271,43 @@ export const ContactMessages = () => {
                     </div>
                     <p className="text-sm text-gray-400 mb-2">{message.email}</p>
                     <p className="text-sm text-gray-300 line-clamp-2">{message.message}</p>
-                    <div className="flex items-center gap-1 mt-2 text-xs text-gray-500">
-                      <Clock className="w-3 h-3" />
-                      {format(new Date(message.created_at), 'dd.MM.yyyy HH:mm', { locale: de })}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Clock className="w-3 h-3" />
+                        {format(new Date(message.created_at), 'dd.MM.yyyy HH:mm', { locale: de })}
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0 text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-gray-900 border-gray-700">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-white">Nachricht löschen</AlertDialogTitle>
+                            <AlertDialogDescription className="text-gray-300">
+                              Sind Sie sicher, dass Sie diese Nachricht von {message.name} löschen möchten? 
+                              Diese Aktion kann nicht rückgängig gemacht werden.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+                              Abbrechen
+                            </AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteMessage(message.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                            >
+                              Löschen
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 ))}
@@ -347,6 +406,37 @@ export const ContactMessages = () => {
                       Als gelesen markieren
                     </Button>
                   )}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="border-red-500/30 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Löschen
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-gray-900 border-gray-700">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Nachricht löschen</AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-300">
+                          Sind Sie sicher, dass Sie diese Nachricht von {selectedMessage.name} löschen möchten? 
+                          Diese Aktion kann nicht rückgängig gemacht werden.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-gray-800 border-gray-700 text-white hover:bg-gray-700">
+                          Abbrechen
+                        </AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={() => handleDeleteMessage(selectedMessage.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          Löschen
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             ) : (
