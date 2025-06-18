@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText } from 'lucide-react';
+import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText, CreditCard, Calendar, Backup, BookOpen, Newsletter, Upload, StickyNote, Globe, Phone, Palette, MessageSquare, Search, Target, TrendingUp, Clock, Archive, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
 import { ProjectManagement } from '@/components/admin/ProjectManagement';
@@ -15,6 +16,10 @@ import { ContactMessages } from '@/components/admin/ContactMessages';
 import { PageManagement } from '@/components/admin/PageManagement';
 import { ThemeSettings } from '@/components/admin/ThemeSettings';
 import { ContactSettings } from '@/components/admin/ContactSettings';
+import { UserManagement } from '@/components/admin/UserManagement';
+import { Analytics } from '@/components/admin/Analytics';
+import { InvoiceManagement } from '@/components/admin/InvoiceManagement';
+import { TransactionManagement } from '@/components/admin/TransactionManagement';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -25,6 +30,9 @@ const AdminDashboard = () => {
     totalImages: 0,
     totalProjects: 0,
     unreadMessages: 0,
+    totalInvoices: 0,
+    totalTransactions: 0,
+    pendingTasks: 0,
   });
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
@@ -33,20 +41,17 @@ const AdminDashboard = () => {
   useEffect(() => {
     console.log('🎯 AdminDashboard useEffect triggered:', { loading, hasUser: !!user, isAdmin });
     
-    // If still loading auth, wait
     if (loading) {
       console.log('🎯 Still loading auth, waiting...');
       return;
     }
 
-    // If no user after auth is loaded, redirect to auth
     if (!user) {
       console.log('🎯 No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
     
-    // If user but not admin, redirect to home
     if (!isAdmin) {
       console.log('🎯 User is not admin, redirecting to home');
       toast.error('Sie haben keine Berechtigung für das Admin Dashboard');
@@ -54,7 +59,6 @@ const AdminDashboard = () => {
       return;
     }
 
-    // User is admin, load stats
     console.log('🎯 User is admin, loading dashboard stats');
     loadStats();
   }, [user, isAdmin, loading, navigate]);
@@ -64,7 +68,6 @@ const AdminDashboard = () => {
       console.log('🎯 Loading dashboard stats...');
       setDashboardLoading(true);
       
-      // Load stats with proper async/await error handling
       const getProfilesCount = async () => {
         try {
           const { count, error } = await supabase.from('profiles').select('id', { count: 'exact' });
@@ -120,15 +123,51 @@ const AdminDashboard = () => {
         }
       };
 
-      const [totalUsers, totalServices, totalImages, totalProjects, unreadMessages] = await Promise.all([
+      const getInvoicesCount = async () => {
+        try {
+          const { count, error } = await supabase.from('invoices').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
+          console.log('Invoices table not accessible:', err);
+          return 0;
+        }
+      };
+
+      const getTransactionsCount = async () => {
+        try {
+          const { count, error } = await supabase.from('transactions').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
+          console.log('Transactions table not accessible:', err);
+          return 0;
+        }
+      };
+
+      const getPendingTasksCount = async () => {
+        try {
+          const { count, error } = await supabase.from('tasks').select('id', { count: 'exact' }).neq('status', 'done');
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
+          console.log('Tasks table not accessible:', err);
+          return 0;
+        }
+      };
+
+      const [totalUsers, totalServices, totalImages, totalProjects, unreadMessages, totalInvoices, totalTransactions, pendingTasks] = await Promise.all([
         getProfilesCount(),
         getServicesCount(),
         getImagesCount(),
         getProjectsCount(),
-        getUnreadMessagesCount()
+        getUnreadMessagesCount(),
+        getInvoicesCount(),
+        getTransactionsCount(),
+        getPendingTasksCount()
       ]);
 
-      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages, totalProjects, unreadMessages });
+      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages, totalProjects, unreadMessages, totalInvoices, totalTransactions, pendingTasks });
 
       setStats({
         totalUsers,
@@ -136,6 +175,9 @@ const AdminDashboard = () => {
         totalImages,
         totalProjects,
         unreadMessages,
+        totalInvoices,
+        totalTransactions,
+        pendingTasks,
       });
     } catch (error) {
       console.error('🎯 Error loading stats:', error);
@@ -160,7 +202,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Show loading screen while auth is still loading
   if (loading) {
     console.log('🎯 Showing loading screen');
     return (
@@ -176,7 +217,6 @@ const AdminDashboard = () => {
     );
   }
 
-  // Don't render anything if redirecting (user will be null or not admin)
   if (!user || !isAdmin) {
     console.log('🎯 User check failed, should redirect');
     return null;
@@ -221,7 +261,7 @@ const AdminDashboard = () => {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
               <Card className="modern-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Benutzer</CardTitle>
@@ -229,7 +269,6 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
-                  <p className="text-xs text-gray-400">Registrierte Benutzer</p>
                 </CardContent>
               </Card>
 
@@ -240,7 +279,6 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.totalProjects}</div>
-                  <p className="text-xs text-gray-400">Projekte gesamt</p>
                 </CardContent>
               </Card>
 
@@ -251,7 +289,6 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.totalServices}</div>
-                  <p className="text-xs text-gray-400">Verfügbare Services</p>
                 </CardContent>
               </Card>
 
@@ -262,7 +299,6 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.totalImages}</div>
-                  <p className="text-xs text-gray-400">Galerie Bilder</p>
                 </CardContent>
               </Card>
 
@@ -273,16 +309,57 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.unreadMessages}</div>
-                  <p className="text-xs text-gray-400">Ungelesen</p>
+                </CardContent>
+              </Card>
+
+              <Card className="modern-card">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-300">Rechnungen</CardTitle>
+                  <FileText className="h-4 w-4 text-red-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stats.totalInvoices}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="modern-card">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-300">Transaktionen</CardTitle>
+                  <CreditCard className="h-4 w-4 text-red-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stats.totalTransactions}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="modern-card">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-300">Aufgaben</CardTitle>
+                  <CheckCircle className="h-4 w-4 text-red-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stats.pendingTasks}</div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Management Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 bg-gray-900/50">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 bg-gray-900/50 mb-6">
                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
                   Übersicht
+                </TabsTrigger>
+                <TabsTrigger value="users" className="text-white data-[state=active]:bg-red-900/50">
+                  Benutzer
+                </TabsTrigger>
+                <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-red-900/50">
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="invoicing" className="text-white data-[state=active]:bg-red-900/50">
+                  Rechnungen
+                </TabsTrigger>
+                <TabsTrigger value="transactions" className="text-white data-[state=active]:bg-red-900/50">
+                  Buchungen
                 </TabsTrigger>
                 <TabsTrigger value="messages" className="text-white data-[state=active]:bg-red-900/50">
                   Nachrichten
@@ -293,9 +370,6 @@ const AdminDashboard = () => {
                 <TabsTrigger value="services" className="text-white data-[state=active]:bg-red-900/50">
                   Services
                 </TabsTrigger>
-                <TabsTrigger value="pages" className="text-white data-[state=active]:bg-red-900/50">
-                  Seiten
-                </TabsTrigger>
                 <TabsTrigger value="contact" className="text-white data-[state=active]:bg-red-900/50">
                   Kontakt
                 </TabsTrigger>
@@ -305,24 +379,24 @@ const AdminDashboard = () => {
               </TabsList>
 
               <TabsContent value="overview" className="mt-6">
-                {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Weitere Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <Card className="modern-card hover-lift">
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
-                        <Users className="w-5 h-5 mr-2 text-red-400" />
-                        Benutzerverwaltung
+                        <Calendar className="w-5 h-5 mr-2 text-red-400" />
+                        Aufgaben
                       </CardTitle>
                       <CardDescription className="text-gray-400">
-                        Verwalten Sie Benutzerkonten und Berechtigungen
+                        Aufgabenverwaltung und Terminplanung
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Button 
                         className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Benutzerverwaltung wird bald verfügbar sein')}
+                        onClick={() => toast.info('Aufgabenverwaltung wird bald verfügbar sein')}
                       >
-                        Benutzer verwalten
+                        Aufgaben verwalten
                       </Button>
                     </CardContent>
                   </Card>
@@ -330,19 +404,119 @@ const AdminDashboard = () => {
                   <Card className="modern-card hover-lift">
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
-                        <BarChart3 className="w-5 h-5 mr-2 text-red-400" />
-                        Analytics
+                        <Backup className="w-5 h-5 mr-2 text-red-400" />
+                        Backups
                       </CardTitle>
                       <CardDescription className="text-gray-400">
-                        Website-Statistiken und Berichte
+                        Datensicherung und Wiederherstellung
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <Button 
                         className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Analytics wird bald verfügbar sein')}
+                        onClick={() => toast.info('Backup-Funktion wird bald verfügbar sein')}
                       >
-                        Berichte anzeigen
+                        Backup erstellen
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Newsletter className="w-5 h-5 mr-2 text-red-400" />
+                        Newsletter
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        E-Mail Marketing und Newsletter
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('Newsletter-Funktion wird bald verfügbar sein')}
+                      >
+                        Newsletter senden
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Upload className="w-5 h-5 mr-2 text-red-400" />
+                        Dateien
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Datei-Management und Upload
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('Datei-Manager wird bald verfügbar sein')}
+                      >
+                        Dateien verwalten
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <StickyNote className="w-5 h-5 mr-2 text-red-400" />
+                        Notizen
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Admin-Notizen und Kommentare
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('Notizen-Funktion wird bald verfügbar sein')}
+                      >
+                        Notizen erstellen
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Search className="w-5 h-5 mr-2 text-red-400" />
+                        SEO Tools
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Suchmaschinenoptimierung
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('SEO Tools werden bald verfügbar sein')}
+                      >
+                        SEO optimieren
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <BookOpen className="w-5 h-5 mr-2 text-red-400" />
+                        System Logs
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        System-Protokolle einsehen
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('System Logs werden bald verfügbar sein')}
+                      >
+                        Logs anzeigen
                       </Button>
                     </CardContent>
                   </Card>
@@ -369,6 +543,22 @@ const AdminDashboard = () => {
                 </div>
               </TabsContent>
 
+              <TabsContent value="users" className="mt-6">
+                <UserManagement />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="mt-6">
+                <Analytics />
+              </TabsContent>
+
+              <TabsContent value="invoicing" className="mt-6">
+                <InvoiceManagement />
+              </TabsContent>
+
+              <TabsContent value="transactions" className="mt-6">
+                <TransactionManagement />
+              </TabsContent>
+
               <TabsContent value="messages" className="mt-6">
                 <ContactMessages />
               </TabsContent>
@@ -379,10 +569,6 @@ const AdminDashboard = () => {
 
               <TabsContent value="services" className="mt-6">
                 <ServiceManagement />
-              </TabsContent>
-
-              <TabsContent value="pages" className="mt-6">
-                <PageManagement />
               </TabsContent>
 
               <TabsContent value="contact" className="mt-6">

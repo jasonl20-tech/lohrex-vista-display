@@ -9,6 +9,96 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_notes: {
+        Row: {
+          category: string | null
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          priority: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          priority?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          priority?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      analytics_data: {
+        Row: {
+          created_at: string
+          id: string
+          metadata: Json | null
+          metric_date: string
+          metric_name: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name: string
+          metric_value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_date?: string
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
+      backups: {
+        Row: {
+          backup_name: string
+          backup_type: string
+          created_at: string
+          created_by: string | null
+          file_size: number | null
+          id: string
+          status: string | null
+        }
+        Insert: {
+          backup_name: string
+          backup_type: string
+          created_at?: string
+          created_by?: string | null
+          file_size?: number | null
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          backup_name?: string
+          backup_type?: string
+          created_at?: string
+          created_by?: string | null
+          file_size?: number | null
+          id?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -39,6 +129,84 @@ export type Database = {
           priority?: string | null
           status?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      email_campaigns: {
+        Row: {
+          click_count: number | null
+          content: string
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          open_count: number | null
+          scheduled_at: string | null
+          sent_at: string | null
+          sent_count: number | null
+          status: string | null
+          subject: string
+        }
+        Insert: {
+          click_count?: number | null
+          content: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          open_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject: string
+        }
+        Update: {
+          click_count?: number | null
+          content?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          open_count?: number | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
+      file_manager: {
+        Row: {
+          created_at: string
+          file_path: string
+          file_size: number
+          filename: string
+          id: string
+          mime_type: string
+          original_name: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_path: string
+          file_size: number
+          filename: string
+          id?: string
+          mime_type: string
+          original_name: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_path?: string
+          file_size?: number
+          filename?: string
+          id?: string
+          mime_type?: string
+          original_name?: string
+          uploaded_by?: string | null
         }
         Relationships: []
       }
@@ -75,6 +243,87 @@ export type Database = {
           image_url?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          customer_address: string | null
+          customer_email: string | null
+          customer_name: string
+          description: string | null
+          due_date: string | null
+          id: string
+          invoice_date: string
+          invoice_number: string
+          status: string | null
+          tax_amount: number | null
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number: string
+          status?: string | null
+          tax_amount?: number | null
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          customer_address?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          status?: string | null
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscribers: {
+        Row: {
+          email: string
+          id: string
+          name: string | null
+          status: string | null
+          subscribed_at: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          name?: string | null
+          status?: string | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          name?: string | null
+          status?: string | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
         }
         Relationships: []
       }
@@ -309,6 +558,125 @@ export type Database = {
         }
         Relationships: []
       }
+      system_logs: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          log_level: string
+          message: string
+          metadata: Json | null
+          module: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          log_level: string
+          message: string
+          metadata?: Json | null
+          module?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          log_level?: string
+          message?: string
+          metadata?: Json | null
+          module?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          priority: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          priority?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          invoice_id: string | null
+          reference_number: string | null
+          transaction_date: string
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          id?: string
+          invoice_id?: string | null
+          reference_number?: string | null
+          transaction_date?: string
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          invoice_id?: string | null
+          reference_number?: string | null
+          transaction_date?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -345,7 +713,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "user"
+      app_role: "admin" | "user" | "moderator" | "editor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -461,7 +829,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "user"],
+      app_role: ["admin", "user", "moderator", "editor"],
     },
   },
 } as const
