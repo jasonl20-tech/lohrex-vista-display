@@ -6,9 +6,12 @@ export const useScrollPosition = (key: string) => {
 
   const saveScrollPosition = (customKey?: string) => {
     const positionKey = customKey || key;
-    scrollPositions.current[positionKey] = window.scrollY;
+    const position = window.scrollY;
+    scrollPositions.current[positionKey] = position;
+    
     // Also save to sessionStorage for persistence across navigation
-    sessionStorage.setItem(`scroll-${positionKey}`, window.scrollY.toString());
+    sessionStorage.setItem(`scroll-${positionKey}`, position.toString());
+    console.log(`Saved scroll position for ${positionKey}:`, position);
   };
 
   const restoreScrollPosition = (customKey?: string) => {
@@ -21,11 +24,22 @@ export const useScrollPosition = (key: string) => {
       position = saved ? parseInt(saved, 10) : 0;
     }
 
-    if (position) {
-      // Use requestAnimationFrame to ensure DOM is ready
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: position, behavior: 'smooth' });
-      });
+    console.log(`Restoring scroll position for ${positionKey}:`, position);
+
+    if (position && position > 0) {
+      // Use multiple attempts to ensure DOM is ready
+      const attemptRestore = (attempts = 0) => {
+        if (attempts < 5) {
+          setTimeout(() => {
+            window.scrollTo({ top: position, behavior: 'auto' });
+            // Check if scroll was successful
+            if (Math.abs(window.scrollY - position) > 50) {
+              attemptRestore(attempts + 1);
+            }
+          }, 50 * (attempts + 1));
+        }
+      };
+      attemptRestore();
     }
   };
 

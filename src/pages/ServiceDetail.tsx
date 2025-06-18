@@ -133,11 +133,11 @@ const ServiceDetail = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/');
-    // Restore scroll position after navigation
+    navigate('/', { replace: false });
+    // Restore scroll position immediately after navigation
     setTimeout(() => {
       restoreScrollPosition();
-    }, 100);
+    }, 50);
   };
 
   if (isLoading) {
@@ -240,7 +240,15 @@ const ServiceDetail = () => {
             <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
               <Button 
                 size="lg"
-                onClick={() => navigate('/#contact')}
+                onClick={() => {
+                  navigate('/', { replace: false });
+                  setTimeout(() => {
+                    const contactSection = document.getElementById('contact');
+                    if (contactSection) {
+                      contactSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}
                 className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-10 py-4 text-lg modern-button"
               >
                 Projekt starten
@@ -248,7 +256,15 @@ const ServiceDetail = () => {
               <Button 
                 variant="outline" 
                 size="lg"
-                onClick={() => navigate('/#contact')}
+                onClick={() => {
+                  navigate('/', { replace: false });
+                  setTimeout(() => {
+                    const contactSection = document.getElementById('contact');
+                    if (contactSection) {
+                      contactSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }, 100);
+                }}
                 className="px-10 py-4 text-lg modern-button-outline"
               >
                 Kostenlose Beratung

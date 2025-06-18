@@ -131,11 +131,11 @@ const ProjectDetail = () => {
   };
 
   const handleBackClick = () => {
-    navigate('/');
-    // Restore scroll position after navigation
+    navigate('/', { replace: false });
+    // Restore scroll position immediately after navigation
     setTimeout(() => {
       restoreScrollPosition();
-    }, 100);
+    }, 50);
   };
 
   if (isLoading) {
