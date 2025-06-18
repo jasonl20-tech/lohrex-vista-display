@@ -12,14 +12,49 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Settings, Shield, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { 
+  User, Settings, Shield, LogOut, ChevronDown, LayoutDashboard,
+  Crown, Star, Heart, Smile, Coffee, Camera, Music, Book,
+  Gamepad2, Laptop, Palette, Globe, Zap, Rocket, Brain,
+  Eye, Diamond, Flame
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+const iconMap = {
+  User, Settings, Shield, Crown, Star, Heart, Smile, Coffee,
+  Camera, Music, Book, Gamepad2, Laptop, Palette, Globe,
+  Zap, Rocket, Brain, Eye, Diamond, Flame
+};
 
 export const ProfileDropdown = () => {
   const { user, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
+  // Fetch user profile for avatar icon
+  const { data: profile } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('avatar_icon')
+        .eq('id', user.id)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching profile:', error);
+        return null;
+      }
+      
+      return data;
+    },
+    enabled: !!user?.id
+  });
 
   if (!user) {
     return (
@@ -46,6 +81,14 @@ export const ProfileDropdown = () => {
     return email.substring(0, 2).toUpperCase();
   };
 
+  const getAvatarIcon = () => {
+    const iconName = profile?.avatar_icon || 'User';
+    const IconComponent = iconMap[iconName as keyof typeof iconMap] || User;
+    return IconComponent;
+  };
+
+  const AvatarIcon = getAvatarIcon();
+
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
@@ -55,7 +98,7 @@ export const ProfileDropdown = () => {
         >
           <Avatar className="h-8 w-8 border border-red-500/30">
             <AvatarFallback className="bg-red-900/30 text-red-400 text-xs font-semibold">
-              {getInitials(user.email || 'U')}
+              <AvatarIcon className="h-4 w-4" />
             </AvatarFallback>
           </Avatar>
           <div className="hidden md:flex flex-col items-start">
@@ -80,7 +123,7 @@ export const ProfileDropdown = () => {
           <div className="flex items-center space-x-2">
             <Avatar className="h-10 w-10 border border-red-500/30">
               <AvatarFallback className="bg-red-900/30 text-red-400 font-semibold">
-                {getInitials(user.email || 'U')}
+                <AvatarIcon className="h-5 w-5" />
               </AvatarFallback>
             </Avatar>
             <div>
@@ -101,7 +144,7 @@ export const ProfileDropdown = () => {
         
         <DropdownMenuItem 
           className="text-gray-300 hover:bg-red-900/20 hover:text-white cursor-pointer"
-          onClick={() => toast.info('Profil-Einstellungen werden bald verfügbar sein')}
+          onClick={() => navigate('/profile')}
         >
           <User className="mr-2 h-4 w-4" />
           Profil
@@ -109,7 +152,7 @@ export const ProfileDropdown = () => {
         
         <DropdownMenuItem 
           className="text-gray-300 hover:bg-red-900/20 hover:text-white cursor-pointer"
-          onClick={() => toast.info('Einstellungen werden bald verfügbar sein')}
+          onClick={() => navigate('/settings')}
         >
           <Settings className="mr-2 h-4 w-4" />
           Einstellungen
