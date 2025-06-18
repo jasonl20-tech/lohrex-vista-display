@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, Code, Globe, Smartphone, Database, Cpu, Monitor, Shield, Cloud, Camera, Palette, Rocket, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navigation } from "@/components/Navigation";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 const iconMap = {
   Code,
@@ -40,6 +41,7 @@ interface Project {
 const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { restoreScrollPosition } = useScrollPosition('homepage');
 
   const { data: project, isLoading } = useQuery({
     queryKey: ['project', id],
@@ -128,6 +130,14 @@ const ProjectDetail = () => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate('/');
+    // Restore scroll position after navigation
+    setTimeout(() => {
+      restoreScrollPosition();
+    }, 100);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black">
@@ -163,7 +173,7 @@ const ProjectDetail = () => {
       
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pt-32">
         <Button 
-          onClick={() => navigate('/')} 
+          onClick={handleBackClick}
           variant="outline"
           className="mb-8 modern-button-outline"
         >

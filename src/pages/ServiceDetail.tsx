@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, CheckCircle, Star } from "lucide-react";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
+import { useEffect } from "react";
 
 interface ServiceItem {
   id: string;
@@ -23,6 +25,7 @@ interface ServiceItem {
 const ServiceDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { restoreScrollPosition } = useScrollPosition('homepage');
 
   const { data: service, isLoading, error } = useQuery({
     queryKey: ['service-detail', id],
@@ -129,6 +132,14 @@ const ServiceDetail = () => {
     return durationMap[category] || '2-4 Wochen';
   };
 
+  const handleBackClick = () => {
+    navigate('/');
+    // Restore scroll position after navigation
+    setTimeout(() => {
+      restoreScrollPosition();
+    }, 100);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center">
@@ -157,7 +168,7 @@ const ServiceDetail = () => {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <Button 
-          onClick={() => navigate('/')} 
+          onClick={handleBackClick}
           variant="outline"
           className="mb-8 modern-button-outline"
         >

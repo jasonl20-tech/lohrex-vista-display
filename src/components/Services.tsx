@@ -1,25 +1,31 @@
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Globe, Smartphone, Palette, Database, Shield, Cloud, Code, Monitor, Cpu, Camera, Rocket, Heart, ArrowRight } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/contexts/ThemeContext";
-import { 
-  Code, Smartphone, Palette, Search, ShoppingCart, Database,
-  Cloud, Shield, Zap, Headphones, Globe, BarChart, 
-  Camera, Megaphone, Users, Cog, Rocket, Brain,
-  Mail, Video, FileText, Monitor, Cpu, Lock,
-  Eye, Link, Mic, Layers, MessageSquare, Wifi,
-  TrendingUp, Accessibility, Leaf
-} from "lucide-react";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 const iconMap = {
-  Code, Smartphone, Palette, Search, ShoppingCart, Database,
-  Cloud, Shield, Zap, Headphones, Globe, BarChart, 
-  Camera, Megaphone, Users, Cog, Rocket, Brain,
-  Mail, Video, FileText, Monitor, Cpu, Lock,
-  Eye, Link, Mic, Layers, MessageSquare, Wifi,
-  TrendingUp, Accessibility, Leaf
+  'Web Development': Globe,
+  'Mobile App Development': Smartphone,
+  'UI/UX Design': Palette,
+  'Data Solutions': Database,
+  'Cybersecurity': Shield,
+  'Cloud Services': Cloud,
+  'Software Development': Code,
+  Monitor,
+  Cpu,
+  Camera,
+  Rocket,
+  Heart,
+  Code,
+  Globe: Globe,
+  Smartphone: Smartphone,
+  default: Code
 };
 
 interface ServiceItem {
@@ -39,47 +45,37 @@ interface ServiceItem {
 }
 
 export const Services = () => {
-  const { ref, isVisible } = useScrollAnimation();
+  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { saveScrollPosition } = useScrollPosition('homepage');
 
   const { data: services = [], isLoading, error } = useQuery({
-    queryKey: ['service-items'],
+    queryKey: ['services'],
     queryFn: async () => {
-      try {
-        const { data, error } = await supabase
-          .from('service_items')
-          .select('*')
-          .eq('active', true)
-          .order('sort_order', { ascending: true });
-        
-        if (error) {
-          console.error('Error fetching services:', error);
-          return [];
-        }
-        
-        return data as ServiceItem[] || [];
-      } catch (err) {
-        console.error('Service fetch error:', err);
+      const { data, error } = await supabase
+        .from('service_items')
+        .select('*')
+        .eq('active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching services:', error);
         return [];
       }
+
+      return data as ServiceItem[];
     },
     retry: 3,
     retryDelay: 1000
   });
 
-  console.log('Services component rendered with:', { servicesCount: services.length, theme, isLoading, error });
-
-  const handleServiceClick = (serviceId: string) => {
-    navigate(`/service/${serviceId}`);
-  };
-
-  // Fallback services if database is empty or fails
-  const fallbackServices = [
+  const fallbackServices: ServiceItem[] = [
     {
       id: 'web-dev',
       title: 'Web Development',
-      description: 'Moderne Websites und Web-Anwendungen',
+      description: 'Moderne Websites und Web-Anwendungen mit neuesten Technologien',
       icon: 'Globe',
       category: 'Development',
       price: 500,
@@ -94,7 +90,7 @@ export const Services = () => {
     {
       id: 'mobile-dev',
       title: 'Mobile Apps',
-      description: 'Native und Cross-Platform Apps',
+      description: 'Native und Cross-Platform Apps für iOS und Android',
       icon: 'Smartphone',
       category: 'Development',
       price: 800,
@@ -109,7 +105,7 @@ export const Services = () => {
     {
       id: 'design',
       title: 'UI/UX Design',
-      description: 'Benutzerfreundliche Designs',
+      description: 'Benutzerfreundliche Designs und optimale User Experience',
       icon: 'Palette',
       category: 'Design',
       price: 300,
@@ -123,92 +119,120 @@ export const Services = () => {
     }
   ];
 
+  const handleServiceClick = (serviceId: string) => {
+    // Save current scroll position before navigating
+    saveScrollPosition();
+    navigate(`/service/${serviceId}`);
+  };
+
+  const handleButtonClick = (service: ServiceItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (service.service_url && service.service_url !== '#') {
+      window.open(service.service_url, '_blank');
+    } else {
+      handleServiceClick(service.id);
+    }
+  };
+
   const displayServices = services.length > 0 ? services : fallbackServices;
 
   return (
-    <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
+    <section id="webdevelopment" className="py-20 bg-black">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div 
-          ref={ref}
-          className={`text-center mb-16 scroll-reveal ${isVisible ? 'revealed' : ''}`}
-        >
-          <h2 className="text-5xl md:text-6xl font-black mb-6 modern-lava-text">
-            Unsere Services
+        <div ref={titleRef} className={`text-center mb-16 scroll-reveal ${titleVisible ? 'revealed' : ''}`}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Unsere <span className="text-gradient">Services</span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Von der Konzeption bis zur Umsetzung - wir bieten umfassende digitale Lösungen 
-            für Ihr Unternehmen. Entdecken Sie unser vollständiges Service-Portfolio.
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Wir bieten ein breites Spektrum an Dienstleistungen, um Ihre Visionen zu verwirklichen.
           </p>
         </div>
 
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div 
-              className="animate-spin rounded-full h-8 w-8 border-b-2"
-              style={{ borderColor: 'hsl(var(--theme-primary))' }}
-            ></div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {displayServices.map((service, index) => {
-              const IconComponent = iconMap[service.icon as keyof typeof iconMap] || iconMap.Code;
-              return (
-                <div 
-                  key={service.id}
-                  className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal cursor-pointer ${isVisible ? 'revealed' : ''}`}
-                  style={{ 
-                    animationDelay: `${index * 0.1}s`,
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                  onClick={() => handleServiceClick(service.id)}
-                >
-                  <div className="flex flex-col items-center text-center space-y-6">
-                    <div 
-                      className="p-4 rounded-xl border border-gray-600"
-                      style={{ 
+        <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
+          {isLoading ? (
+            <div className="col-span-full text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-2"></div>
+              <p className="text-gray-400">Services werden geladen...</p>
+            </div>
+          ) : error ? (
+            <div className="col-span-full text-center py-8">
+              <p className="text-red-400">Fehler beim Laden der Services: {error.message}</p>
+            </div>
+          ) : displayServices.map((service, index) => {
+            const IconComponent = iconMap[service.icon as keyof typeof iconMap] || iconMap[service.category as keyof typeof iconMap] || iconMap.default;
+
+            return (
+              <Card
+                key={service.id}
+                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer hover:shadow-lg"
+                style={{
+                  animationDelay: `${index * 100}ms`,
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.5)';
+                  e.currentTarget.style.boxShadow = `0 20px 40px hsl(var(--theme-primary) / 0.2)`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onClick={() => handleServiceClick(service.id)}
+              >
+                <CardHeader className="pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className="p-2 rounded-lg border border-gray-600"
+                      style={{
                         background: 'rgba(255, 255, 255, 0.1)',
                       }}
                     >
-                      <IconComponent 
-                        className="h-8 w-8 text-white"
+                      <IconComponent
+                        className="h-6 w-6 text-white"
                       />
                     </div>
-                    <h3 className="text-xl font-bold text-white">{service.title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
-                    {service.price && (
-                      <div 
-                        className="text-lg font-semibold"
-                        style={{ color: 'hsl(var(--theme-primary))' }}
-                      >
-                        ab {service.price}€
-                      </div>
-                    )}
-                    <Button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleServiceClick(service.id);
+                    <CardTitle
+                      className="text-xl font-bold text-white group-hover:transition-colors"
+                      style={{
+                        '--hover-color': 'hsl(var(--theme-primary))'
+                      } as React.CSSProperties}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'hsl(var(--theme-primary))';
                       }}
-                      className="w-full text-white border-0"
-                      style={{ 
-                        background: `linear-gradient(to right, hsl(var(--theme-primary)), hsl(var(--theme-secondary)))`,
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'white';
                       }}
                     >
-                      {service.button_text}
+                      {service.title}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="pt-0">
+                  <CardDescription className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                    {service.description}
+                  </CardDescription>
+                  <div className="flex items-center justify-between">
+                    {service.price && (
+                      <Badge variant="outline">
+                        ab {service.price}€
+                      </Badge>
+                    )}
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={(e) => handleButtonClick(service, e)}
+                      className="modern-button-secondary"
+                    >
+                      {service.button_text || 'Mehr erfahren'}
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {error && services.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-400">Services werden geladen oder sind temporär nicht verfügbar.</p>
-          </div>
-        )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

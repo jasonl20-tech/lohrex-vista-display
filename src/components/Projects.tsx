@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Code, Smartphone, Globe, Database, Cpu, Monitor, Shield, Cloud, Camera, Palette, Rocket, Heart } from "lucide-react";
@@ -7,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 const iconMap = {
   "Web Development": Globe,
@@ -48,6 +48,7 @@ export const Projects = () => {
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { saveScrollPosition } = useScrollPosition('homepage');
 
   console.log('Projects component rendering...');
 
@@ -99,6 +100,7 @@ export const Projects = () => {
   };
 
   const handleProjectClick = (projectId: string) => {
+    saveScrollPosition();
     navigate(`/project/${projectId}`);
   };
 
