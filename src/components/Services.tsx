@@ -71,7 +71,7 @@ export const Services = () => {
       <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <div className={`animate-spin rounded-full h-8 w-8 border-b-2 border-${theme}-500`}></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: `hsl(var(--theme-primary))` }}></div>
           </div>
         </div>
       </section>
@@ -105,13 +105,24 @@ export const Services = () => {
                 onClick={() => handleServiceClick(service.id)}
               >
                 <div className="flex flex-col items-center text-center space-y-6">
-                  <div className={`p-4 bg-gradient-to-br from-${theme}-600/20 to-${theme}-800/20 rounded-xl`}>
-                    <IconComponent className={`h-8 w-8 text-${theme}-400`} />
+                  <div 
+                    className="p-4 rounded-xl"
+                    style={{ 
+                      background: `linear-gradient(to bottom right, hsl(var(--theme-primary) / 0.2), hsl(var(--theme-secondary) / 0.2))` 
+                    }}
+                  >
+                    <IconComponent 
+                      className="h-8 w-8" 
+                      style={{ color: `hsl(var(--theme-primary))` }}
+                    />
                   </div>
                   <h3 className="text-xl font-bold text-white">{service.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
                   {service.price && (
-                    <div className={`text-lg font-semibold text-${theme}-400`}>
+                    <div 
+                      className="text-lg font-semibold"
+                      style={{ color: `hsl(var(--theme-primary))` }}
+                    >
                       ab {service.price}€
                     </div>
                   )}
@@ -120,7 +131,10 @@ export const Services = () => {
                       e.stopPropagation();
                       handleServiceClick(service.id);
                     }}
-                    className={`w-full bg-gradient-to-r from-${theme}-600 to-${theme}-700 hover:from-${theme}-700 hover:to-${theme}-800 text-white modern-button`}
+                    className="w-full text-white modern-button"
+                    style={{
+                      background: `linear-gradient(to right, hsl(var(--theme-primary)), hsl(var(--theme-secondary)))`
+                    }}
                   >
                     {service.button_text}
                   </Button>

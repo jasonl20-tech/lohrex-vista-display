@@ -69,7 +69,7 @@ export const Projects = () => {
       case "Abgeschlossen":
         return "bg-green-900/50 text-green-400 border-green-500/30";
       case "In Entwicklung":
-        return `bg-${theme}-900/50 text-${theme}-400 border-${theme}-500/30`;
+        return "bg-blue-900/50 text-blue-400 border-blue-500/30";
       case "Planung":
         return "bg-yellow-900/50 text-yellow-400 border-yellow-500/30";
       default:
@@ -86,7 +86,7 @@ export const Projects = () => {
       <section id="projects" className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <div className={`animate-spin rounded-full h-8 w-8 border-b-2 border-${theme}-500`}></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: `hsl(var(--theme-primary))` }}></div>
           </div>
         </div>
       </section>
@@ -112,8 +112,20 @@ export const Projects = () => {
             return (
               <Card 
                 key={project.id} 
-                className={`group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-${theme}-500/50 hover-glow cursor-pointer`}
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer"
+                style={{ 
+                  animationDelay: `${index * 100}ms`,
+                  borderColor: `hsl(var(--theme-primary) / 0.3)`,
+                  boxShadow: `0 0 0 0 hsl(var(--theme-primary) / 0)`
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = `hsl(var(--theme-primary) / 0.5)`;
+                  e.currentTarget.style.boxShadow = `0 10px 30px hsl(var(--theme-primary) / 0.2)`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = `hsl(var(--theme-primary) / 0.3)`;
+                  e.currentTarget.style.boxShadow = `0 0 0 0 hsl(var(--theme-primary) / 0)`;
+                }}
                 onClick={() => handleProjectClick(project.id)}
               >
                 <div className="relative overflow-hidden rounded-t-lg">
@@ -127,17 +139,38 @@ export const Projects = () => {
                       {project.status}
                     </Badge>
                   </div>
-                  <div className={`absolute inset-0 bg-${theme}-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
+                  <div 
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+                    style={{ background: `hsl(var(--theme-primary) / 0.2)` }}
+                  >
                     <ExternalLink className="text-white h-8 w-8" />
                   </div>
                 </div>
                 
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className={`bg-${theme}-900/50 p-2 rounded-lg border border-${theme}-500/30`}>
-                      <IconComponent className={`h-6 w-6 text-${theme}-400`} />
+                    <div 
+                      className="p-2 rounded-lg border"
+                      style={{ 
+                        background: `hsl(var(--theme-primary) / 0.1)`,
+                        borderColor: `hsl(var(--theme-primary) / 0.3)`
+                      }}
+                    >
+                      <IconComponent 
+                        className="h-6 w-6" 
+                        style={{ color: `hsl(var(--theme-primary))` }}
+                      />
                     </div>
-                    <CardTitle className={`text-xl font-bold text-white group-hover:text-${theme}-400 transition-colors`}>
+                    <CardTitle 
+                      className="text-xl font-bold text-white group-hover:transition-colors"
+                      style={{ color: 'white' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = `hsl(var(--theme-primary))`;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'white';
+                      }}
+                    >
                       {project.title}
                     </CardTitle>
                   </div>
@@ -152,7 +185,22 @@ export const Projects = () => {
                       <Badge 
                         key={tag} 
                         variant="secondary" 
-                        className={`bg-gray-800/50 text-gray-300 hover:bg-${theme}-900/50 hover:text-${theme}-400 transition-colors border border-gray-700 hover:border-${theme}-500/30`}
+                        className="bg-gray-800/50 text-gray-300 border border-gray-700 transition-colors hover:border-opacity-50"
+                        style={{
+                          '--hover-bg': `hsl(var(--theme-primary) / 0.1)`,
+                          '--hover-text': `hsl(var(--theme-primary))`,
+                          '--hover-border': `hsl(var(--theme-primary) / 0.3)`
+                        } as React.CSSProperties}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = `hsl(var(--theme-primary) / 0.1)`;
+                          e.currentTarget.style.color = `hsl(var(--theme-primary))`;
+                          e.currentTarget.style.borderColor = `hsl(var(--theme-primary) / 0.3)`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = '';
+                          e.currentTarget.style.color = '';
+                          e.currentTarget.style.borderColor = '';
+                        }}
                       >
                         {tag}
                       </Badge>
