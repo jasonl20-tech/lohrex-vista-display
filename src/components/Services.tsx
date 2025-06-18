@@ -44,39 +44,87 @@ export const Services = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const { data: services = [], isLoading } = useQuery({
+  const { data: services = [], isLoading, error } = useQuery({
     queryKey: ['service-items'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('service_items')
-        .select('*')
-        .eq('active', true)
-        .order('sort_order', { ascending: true });
-      
-      if (error) {
-        console.error('Error fetching services:', error);
-        throw error;
+      try {
+        const { data, error } = await supabase
+          .from('service_items')
+          .select('*')
+          .eq('active', true)
+          .order('sort_order', { ascending: true });
+        
+        if (error) {
+          console.error('Error fetching services:', error);
+          return [];
+        }
+        
+        return data as ServiceItem[] || [];
+      } catch (err) {
+        console.error('Service fetch error:', err);
+        return [];
       }
-      
-      return data as ServiceItem[];
-    }
+    },
+    retry: 3,
+    retryDelay: 1000
   });
+
+  console.log('Services component rendered with:', { servicesCount: services.length, theme, isLoading, error });
 
   const handleServiceClick = (serviceId: string) => {
     navigate(`/service/${serviceId}`);
   };
 
-  if (isLoading) {
-    return (
-      <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: `hsl(var(--theme-primary))` }}></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Fallback services if database is empty or fails
+  const fallbackServices = [
+    {
+      id: 'web-dev',
+      title: 'Web Development',
+      description: 'Moderne Websites und Web-Anwendungen',
+      icon: 'Globe',
+      category: 'Development',
+      price: 500,
+      active: true,
+      featured: false,
+      sort_order: 1,
+      button_text: 'Mehr erfahren',
+      service_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: 'mobile-dev',
+      title: 'Mobile Apps',
+      description: 'Native und Cross-Platform Apps',
+      icon: 'Smartphone',
+      category: 'Development',
+      price: 800,
+      active: true,
+      featured: false,
+      sort_order: 2,
+      button_text: 'Mehr erfahren',
+      service_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    },
+    {
+      id: 'design',
+      title: 'UI/UX Design',
+      description: 'Benutzerfreundliche Designs',
+      icon: 'Palette',
+      category: 'Design',
+      price: 300,
+      active: true,
+      featured: false,
+      sort_order: 3,
+      button_text: 'Mehr erfahren',
+      service_url: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+  ];
+
+  const displayServices = services.length > 0 ? services : fallbackServices;
 
   return (
     <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
@@ -94,55 +142,67 @@ export const Services = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {services.map((service, index) => {
-            const IconComponent = iconMap[service.icon as keyof typeof iconMap] || iconMap.Code;
-            return (
-              <div 
-                key={service.id}
-                className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal cursor-pointer ${isVisible ? 'revealed' : ''}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => handleServiceClick(service.id)}
-              >
-                <div className="flex flex-col items-center text-center space-y-6">
-                  <div 
-                    className="p-4 rounded-xl"
-                    style={{ 
-                      background: `linear-gradient(to bottom right, hsl(var(--theme-primary) / 0.2), hsl(var(--theme-secondary) / 0.2))` 
-                    }}
-                  >
-                    <IconComponent 
-                      className="h-8 w-8" 
-                      style={{ color: `hsl(var(--theme-primary))` }}
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-white">{service.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
-                  {service.price && (
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div 
+              className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"
+            ></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {displayServices.map((service, index) => {
+              const IconComponent = iconMap[service.icon as keyof typeof iconMap] || iconMap.Code;
+              return (
+                <div 
+                  key={service.id}
+                  className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal cursor-pointer ${isVisible ? 'revealed' : ''}`}
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                  onClick={() => handleServiceClick(service.id)}
+                >
+                  <div className="flex flex-col items-center text-center space-y-6">
                     <div 
-                      className="text-lg font-semibold"
-                      style={{ color: `hsl(var(--theme-primary))` }}
+                      className="p-4 rounded-xl border border-red-500/30"
+                      style={{ 
+                        background: 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.2), rgba(185, 28, 28, 0.2))'
+                      }}
                     >
-                      ab {service.price}€
+                      <IconComponent 
+                        className="h-8 w-8 text-red-500"
+                      />
                     </div>
-                  )}
-                  <Button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleServiceClick(service.id);
-                    }}
-                    className="w-full text-white modern-button"
-                    style={{
-                      background: `linear-gradient(to right, hsl(var(--theme-primary)), hsl(var(--theme-secondary)))`
-                    }}
-                  >
-                    {service.button_text}
-                  </Button>
+                    <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
+                    {service.price && (
+                      <div className="text-lg font-semibold text-red-400">
+                        ab {service.price}€
+                      </div>
+                    )}
+                    <Button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleServiceClick(service.id);
+                      }}
+                      className="w-full text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0"
+                    >
+                      {service.button_text}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
+
+        {error && services.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-400">Services werden geladen oder sind temporär nicht verfügbar.</p>
+          </div>
+        )}
       </div>
     </section>
   );
