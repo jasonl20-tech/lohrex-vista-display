@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import { Navigation } from '@/components/Navigation';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,8 +17,15 @@ const Auth = () => {
   const [fullName, setFullName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate('/admin');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +38,7 @@ const Auth = () => {
           toast.error('Login fehlgeschlagen: ' + error.message);
         } else {
           toast.success('Erfolgreich angemeldet!');
-          navigate('/admin');
+          // Navigation happens via useEffect when user state changes
         }
       } else {
         const { error } = await signUp(email, password, fullName);
@@ -48,108 +56,112 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen modern-lava-gradient flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50"></div>
+    <div className="min-h-screen bg-background">
+      <Navigation />
       
-      <Card className="w-full max-w-md relative z-10 modern-card border-red-900/30">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 rounded-full bg-red-900/20 border border-red-500/30">
-              <Lock className="w-8 h-8 text-red-400" />
+      <div className="min-h-screen modern-lava-gradient flex items-center justify-center p-4 pt-20">
+        <div className="absolute inset-0 bg-black/50"></div>
+        
+        <Card className="w-full max-w-md relative z-10 modern-card border-red-900/30">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="p-3 rounded-full bg-red-900/20 border border-red-500/30">
+                <Lock className="w-8 h-8 text-red-400" />
+              </div>
             </div>
-          </div>
-          <CardTitle className="text-2xl font-bold modern-lava-text">
-            Admin {isLogin ? 'Anmeldung' : 'Registrierung'}
-          </CardTitle>
-          <CardDescription className="text-gray-400">
-            {isLogin 
-              ? 'Melden Sie sich mit Ihren Admin-Zugangsdaten an' 
-              : 'Erstellen Sie ein neues Admin-Konto'
-            }
-          </CardDescription>
-        </CardHeader>
+            <CardTitle className="text-2xl font-bold modern-lava-text">
+              Admin {isLogin ? 'Anmeldung' : 'Registrierung'}
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              {isLogin 
+                ? 'Melden Sie sich mit Ihren Admin-Zugangsdaten an' 
+                : 'Erstellen Sie ein neues Admin-Konto'
+              }
+            </CardDescription>
+          </CardHeader>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-gray-300">Vollständiger Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="Max Mustermann"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required={!isLogin}
+                      className="pl-10 bg-black/40 border-red-900/30 text-white placeholder:text-gray-500"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-gray-300">Vollständiger Name</Label>
+                <Label htmlFor="email" className="text-gray-300">E-Mail</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                   <Input
-                    id="fullName"
-                    type="text"
-                    placeholder="Max Mustermann"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
+                    id="email"
+                    type="email"
+                    placeholder="admin@lohrex.de"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
                     className="pl-10 bg-black/40 border-red-900/30 text-white placeholder:text-gray-500"
                   />
                 </div>
               </div>
-            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-gray-300">E-Mail</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@lohrex.de"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="pl-10 bg-black/40 border-red-900/30 text-white placeholder:text-gray-500"
-                />
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-gray-300">Passwort</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="pl-10 pr-10 bg-black/40 border-red-900/30 text-white placeholder:text-gray-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full modern-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold"
+              >
+                {loading ? 'Lädt...' : (isLogin ? 'Anmelden' : 'Registrieren')}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
+              >
+                {isLogin 
+                  ? 'Noch kein Konto? Registrieren' 
+                  : 'Bereits ein Konto? Anmelden'
+                }
+              </button>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-gray-300">Passwort</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="pl-10 pr-10 bg-black/40 border-red-900/30 text-white placeholder:text-gray-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full modern-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold"
-            >
-              {loading ? 'Lädt...' : (isLogin ? 'Anmelden' : 'Registrieren')}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
-            >
-              {isLogin 
-                ? 'Noch kein Konto? Registrieren' 
-                : 'Bereits ein Konto? Anmelden'
-              }
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

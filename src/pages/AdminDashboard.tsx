@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { Users, Settings, Database, Activity, BarChart3, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import { Navigation } from '@/components/Navigation';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -62,8 +63,11 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="min-h-screen flex items-center justify-center pt-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        </div>
       </div>
     );
   }
@@ -74,8 +78,10 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
+      
       {/* Header */}
-      <div className="border-b border-gray-800 bg-black/50 backdrop-blur-xl">
+      <div className="border-b border-gray-800 bg-black/50 backdrop-blur-xl mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
