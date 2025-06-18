@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,43 +6,43 @@
 
 @layer base {
   :root {
-    --background: 0 0% 3%;
+    --background: 0 0% 1%;
     --foreground: 210 40% 98%;
 
-    --card: 0 0% 6%;
+    --card: 0 0% 3%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 6%;
+    --popover: 0 0% 3%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 8%;
+    --secondary: 210 40% 5%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 210 40% 10%;
+    --muted: 210 40% 6%;
     --muted-foreground: 215.4 16.3% 70%;
 
-    --accent: 210 40% 10%;
+    --accent: 210 40% 6%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 15%;
-    --input: 214.3 31.8% 15%;
+    --border: 214.3 31.8% 8%;
+    --input: 214.3 31.8% 8%;
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 3%;
+    --sidebar-background: 0 0% 1%;
     --sidebar-foreground: 240 5.3% 90%;
     --sidebar-primary: 240 5.9% 90%;
-    --sidebar-primary-foreground: 0 0% 3%;
-    --sidebar-accent: 240 4.8% 8%;
+    --sidebar-primary-foreground: 0 0% 1%;
+    --sidebar-accent: 240 4.8% 4%;
     --sidebar-accent-foreground: 240 5.9% 90%;
-    --sidebar-border: 220 13% 12%;
+    --sidebar-border: 220 13% 6%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -63,15 +62,15 @@
 @layer utilities {
   .modern-lava-gradient {
     background: linear-gradient(-45deg, 
-      #000000, #1a0000, #2d0000, #400000, 
-      #5a0000, #330000, #1a0000, #000000);
+      #000000, #0d0000, #1a0000, #2d0000, 
+      #400000, #1a0000, #0d0000, #000000);
     background-size: 600% 600%;
     animation: modernLavaFlow 8s ease-in-out infinite;
   }
 
   .modern-lava-text {
     background: linear-gradient(135deg, 
-      #ff1a1a, #ff4444, #cc0000, #ff6666, #ff3333);
+      #ff0000, #cc0000, #990000, #ff3333, #cc0000);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -81,7 +80,7 @@
   }
 
   .glow-red-subtle {
-    box-shadow: 0 0 25px rgba(239, 68, 68, 0.15);
+    box-shadow: 0 0 25px rgba(220, 38, 38, 0.2);
   }
 
   .modern-badge {
@@ -91,7 +90,7 @@
 
   .modern-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
   }
 
   .modern-button {
@@ -101,7 +100,7 @@
 
   .modern-button:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.5);
   }
 
   .modern-button-outline {
@@ -111,7 +110,7 @@
 
   .modern-button-outline:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(220, 38, 38, 0.2);
+    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.3);
   }
 
   .scroll-reveal {
@@ -131,25 +130,25 @@
 
   .hover-lift:hover {
     transform: translateY(-8px) scale(1.03);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
   }
 
   .glass-effect {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .modern-card {
-    background: linear-gradient(145deg, rgba(0, 0, 0, 0.8), rgba(20, 0, 0, 0.6));
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.9), rgba(10, 0, 0, 0.8));
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(220, 38, 38, 0.2);
+    border: 1px solid rgba(185, 28, 28, 0.2);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .modern-card:hover {
-    border-color: rgba(220, 38, 38, 0.4);
-    box-shadow: 0 20px 40px rgba(220, 38, 38, 0.1);
+    border-color: rgba(185, 28, 28, 0.5);
+    box-shadow: 0 20px 40px rgba(185, 28, 28, 0.15);
   }
 
   .animate-pulse-slow {
@@ -166,7 +165,7 @@
 
   .gradient-border {
     position: relative;
-    background: linear-gradient(145deg, rgba(0, 0, 0, 0.9), rgba(20, 0, 0, 0.7));
+    background: linear-gradient(145deg, rgba(0, 0, 0, 0.95), rgba(10, 0, 0, 0.9));
   }
 
   .gradient-border::before {
@@ -174,7 +173,7 @@
     position: absolute;
     inset: 0;
     padding: 2px;
-    background: linear-gradient(45deg, #ff0000, #cc0000, #990000);
+    background: linear-gradient(45deg, #cc0000, #990000, #660000);
     border-radius: inherit;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;

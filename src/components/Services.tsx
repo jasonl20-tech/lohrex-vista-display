@@ -1,147 +1,87 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Brain, Megaphone, BarChart3, Smartphone, Cloud, Lock, Lightbulb, Target, Zap, Heart } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
-const services = [
-  {
-    icon: Brain,
-    title: "KI & Machine Learning",
-    description: "Intelligente Automatisierung und datengetriebene Entscheidungen für Ihr Unternehmen.",
-    color: "from-purple-500 to-pink-500"
-  },
-  {
-    icon: Megaphone,
-    title: "Digital Marketing",
-    description: "SEO, Social Media Marketing und Performance-Kampagnen für maximale Reichweite.",
-    color: "from-blue-500 to-cyan-500"
-  },
-  {
-    icon: BarChart3,
-    title: "Analytics & BI",
-    description: "Umfassende Datenanalyse und Business Intelligence für strategische Entscheidungen.",
-    color: "from-green-500 to-emerald-500"
-  },
-  {
-    icon: Smartphone,
-    title: "Mobile Apps",
-    description: "Native und Cross-Platform Apps für iOS und Android mit perfekter User Experience.",
-    color: "from-orange-500 to-red-500"
-  },
-  {
-    icon: Cloud,
-    title: "Cloud Solutions",
-    description: "Skalierbare Cloud-Infrastrukturen und Migration bestehender Systeme.",
-    color: "from-indigo-500 to-purple-500"
-  },
-  {
-    icon: Lock,
-    title: "Cybersecurity",
-    description: "Umfassende Sicherheitslösungen zum Schutz Ihrer digitalen Assets.",
-    color: "from-red-500 to-pink-500"
-  }
-];
-
-const additionalIdeas = [
-  {
-    icon: Lightbulb,
-    title: "Innovation Lab",
-    description: "Experimentelle Technologien und Prototyping für zukunftsweisende Lösungen."
-  },
-  {
-    icon: Target,
-    title: "Strategie & Beratung",
-    description: "Digitale Transformation und strategische Technologie-Beratung."
-  },
-  {
-    icon: Zap,
-    title: "Automation",
-    description: "Prozessoptimierung durch intelligente Automatisierungslösungen."
-  },
-  {
-    icon: Heart,
-    title: "User Experience",
-    description: "Nutzerzentrierte Designs, die Emotionen wecken und begeistern."
-  }
-];
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { 
+  Code, Smartphone, Palette, Search, ShoppingCart, Database,
+  Cloud, Shield, Zap, Headphones, Globe, BarChart, 
+  Camera, Megaphone, Users, Cog, Rocket, Brain,
+  Mail, Video, FileText, Monitor, Cpu, Lock
+} from "lucide-react";
 
 export const Services = () => {
-  const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
-  const { ref: servicesRef, isVisible: servicesVisible } = useScrollAnimation();
-  const { ref: ideasRef, isVisible: ideasVisible } = useScrollAnimation();
+  const { ref, isVisible } = useScrollAnimation();
+  const navigate = useNavigate();
+
+  const services = [
+    { id: 'webdesign', title: 'Webdesign', icon: Palette, description: 'Moderne und ansprechende Website-Designs' },
+    { id: 'webentwicklung', title: 'Webentwicklung', icon: Code, description: 'Professionelle Website-Entwicklung' },
+    { id: 'app-entwicklung', title: 'App-Entwicklung', icon: Smartphone, description: 'Mobile Apps für iOS und Android' },
+    { id: 'seo', title: 'SEO Optimierung', icon: Search, description: 'Suchmaschinenoptimierung für bessere Rankings' },
+    { id: 'e-commerce', title: 'E-Commerce', icon: ShoppingCart, description: 'Online-Shops und Verkaufsplattformen' },
+    { id: 'datenbank', title: 'Datenbank-Design', icon: Database, description: 'Effiziente Datenbanklösungen' },
+    { id: 'cloud-services', title: 'Cloud Services', icon: Cloud, description: 'Cloud-basierte Lösungen und Migration' },
+    { id: 'cybersecurity', title: 'Cybersecurity', icon: Shield, description: 'Sicherheitslösungen für Ihr Unternehmen' },
+    { id: 'performance', title: 'Performance-Optimierung', icon: Zap, description: 'Website-Geschwindigkeit optimieren' },
+    { id: 'support', title: 'Technical Support', icon: Headphones, description: '24/7 technischer Support' },
+    { id: 'hosting', title: 'Web Hosting', icon: Globe, description: 'Zuverlässige Hosting-Lösungen' },
+    { id: 'analytics', title: 'Web Analytics', icon: BarChart, description: 'Datenanalyse und Reporting' },
+    { id: 'fotografie', title: 'Web-Fotografie', icon: Camera, description: 'Professionelle Fotos für Websites' },
+    { id: 'marketing', title: 'Digital Marketing', icon: Megaphone, description: 'Online-Marketing-Strategien' },
+    { id: 'social-media', title: 'Social Media', icon: Users, description: 'Social Media Management' },
+    { id: 'wartung', title: 'Website-Wartung', icon: Cog, description: 'Regelmäßige Updates und Pflege' },
+    { id: 'startup', title: 'Startup-Lösungen', icon: Rocket, description: 'Komplettlösungen für Startups' },
+    { id: 'ki-integration', title: 'KI-Integration', icon: Brain, description: 'Künstliche Intelligenz implementieren' },
+    { id: 'email-marketing', title: 'E-Mail Marketing', icon: Mail, description: 'Professionelle E-Mail-Kampagnen' },
+    { id: 'video-content', title: 'Video Content', icon: Video, description: 'Videoproduktion für Web' },
+    { id: 'content-management', title: 'Content Management', icon: FileText, description: 'CMS-Lösungen und Content-Strategie' },
+    { id: 'responsive-design', title: 'Responsive Design', icon: Monitor, description: 'Mobile-optimierte Websites' },
+    { id: 'api-entwicklung', title: 'API-Entwicklung', icon: Cpu, description: 'Schnittstellen und API-Services' },
+    { id: 'ssl-sicherheit', title: 'SSL & Sicherheit', icon: Lock, description: 'Website-Verschlüsselung und Sicherheit' }
+  ];
+
+  const handleServiceClick = (serviceId: string) => {
+    navigate(`/service/${serviceId}`);
+  };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-black via-gray-900/30 to-black relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-32 left-20 w-64 h-64 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-32 right-20 w-80 h-80 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl animate-bounce-slow"></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={titleRef} className={`text-center mb-20 scroll-reveal ${titleVisible ? 'revealed' : ''}`}>
-          <div className="inline-block px-6 py-2 bg-gradient-to-r from-red-900/30 to-purple-900/30 rounded-full border border-red-500/30 mb-6">
-            <span className="text-red-300 font-semibold">Unsere Services</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-black mb-8">
-            <span className="modern-lava-text">Vollservice</span>
-            <br />
-            <span className="text-white font-light">Digitalagentur</span>
+    <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div 
+          ref={ref}
+          className={`text-center mb-16 scroll-reveal ${isVisible ? 'revealed' : ''}`}
+        >
+          <h2 className="text-5xl md:text-6xl font-black mb-6 modern-lava-text">
+            Unsere Services
           </h2>
-          <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
-            Von der ersten Idee bis zur erfolgreichen Umsetzung - wir bieten das komplette 
-            Spektrum digitaler Dienstleistungen aus einer Hand.
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            Von der Konzeption bis zur Umsetzung - wir bieten umfassende digitale Lösungen 
+            für Ihr Unternehmen. Entdecken Sie unser vollständiges Service-Portfolio.
           </p>
         </div>
 
-        <div ref={servicesRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 scroll-reveal ${servicesVisible ? 'revealed' : ''}`}>
-          {services.map((service, index) => {
-            const IconComponent = service.icon;
-            return (
-              <Card 
-                key={index}
-                className="modern-card hover-lift group overflow-hidden"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-                <CardContent className="pt-8 pb-6 text-center relative">
-                  <div className={`bg-gradient-to-br ${service.color} w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-all duration-300`}>
-                    <IconComponent className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-4 group-hover:text-red-100 transition-colors">
-                    {service.title}
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors">
-                    {service.description}
-                  </p>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-all duration-500`}></div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div ref={ideasRef} className={`scroll-reveal ${ideasVisible ? 'revealed' : ''}`}>
-          <h3 className="text-3xl font-bold text-center text-white mb-12">
-            Weitere <span className="modern-lava-text">Innovationen</span>
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {additionalIdeas.map((idea, index) => {
-              const IconComponent = idea.icon;
-              return (
-                <div 
-                  key={index}
-                  className="glass-effect rounded-2xl p-6 text-center hover:scale-105 transition-all duration-300 border border-red-500/20 hover:border-red-500/40"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <div className="bg-gradient-to-br from-red-900/40 to-red-800/20 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <IconComponent className="h-6 w-6 text-red-400" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">{idea.title}</h4>
-                  <p className="text-sm text-gray-300 leading-relaxed">{idea.description}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {services.map((service, index) => (
+            <div 
+              key={service.id}
+              className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal ${isVisible ? 'revealed' : ''}`}
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              <div className="flex flex-col items-center text-center space-y-6">
+                <div className="p-4 bg-gradient-to-br from-red-600/20 to-red-800/20 rounded-xl">
+                  <service.icon className="h-8 w-8 text-red-400" />
                 </div>
-              );
-            })}
-          </div>
+                <h3 className="text-xl font-bold text-white">{service.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
+                <Button 
+                  onClick={() => handleServiceClick(service.id)}
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white modern-button"
+                >
+                  Mehr erfahren
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
