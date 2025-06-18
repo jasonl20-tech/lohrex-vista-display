@@ -166,15 +166,13 @@ export const Services = () => {
                 >
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div 
-                      className="p-4 rounded-xl border"
+                      className="p-4 rounded-xl border border-gray-600"
                       style={{ 
-                        background: 'hsl(var(--theme-primary) / 0.2)',
-                        borderColor: 'hsl(var(--theme-primary) / 0.3)'
+                        background: 'rgba(255, 255, 255, 0.1)',
                       }}
                     >
                       <IconComponent 
-                        className="h-8 w-8"
-                        style={{ color: 'hsl(var(--theme-primary))' }}
+                        className="h-8 w-8 text-white"
                       />
                     </div>
                     <h3 className="text-xl font-bold text-white">{service.title}</h3>
