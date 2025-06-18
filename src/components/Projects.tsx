@@ -21,6 +21,9 @@ const iconMap = {
   Palette,
   Rocket,
   Heart,
+  Code,
+  Globe: Globe,
+  Smartphone: Smartphone,
   default: Code
 };
 
@@ -46,9 +49,12 @@ export const Projects = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
+  console.log('Projects component rendering...');
+
   const { data: projects = [], isLoading, error } = useQuery({
     queryKey: ['projects'],
     queryFn: async () => {
+      console.log('Fetching projects from database...');
       try {
         const { data, error } = await supabase
           .from('projects')
@@ -58,20 +64,26 @@ export const Projects = () => {
         
         if (error) {
           console.error('Error fetching projects:', error);
-          return [];
+          throw error;
         }
         
+        console.log('Projects fetched successfully:', data?.length || 0, 'projects');
         return data as Project[] || [];
       } catch (err) {
         console.error('Project fetch error:', err);
-        return [];
+        throw err;
       }
     },
     retry: 3,
     retryDelay: 1000
   });
 
-  console.log('Projects component rendered with:', { projectsCount: projects.length, theme, isLoading, error });
+  console.log('Projects component state:', { 
+    projectsCount: projects.length, 
+    theme, 
+    isLoading, 
+    error: error?.message 
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -91,7 +103,7 @@ export const Projects = () => {
   };
 
   // Fallback projects if database is empty or fails
-  const fallbackProjects = [
+  const fallbackProjects: Project[] = [
     {
       id: 'portfolio-website',
       title: 'Portfolio Website',
@@ -139,7 +151,10 @@ export const Projects = () => {
     }
   ];
 
+  // Always show fallback projects for now, or database projects if available
   const displayProjects = projects.length > 0 ? projects : fallbackProjects;
+
+  console.log('Final display projects:', displayProjects.length);
 
   return (
     <section id="projects" className="py-20 bg-black">
@@ -160,131 +175,140 @@ export const Projects = () => {
               className="animate-spin rounded-full h-8 w-8 border-b-2"
               style={{ borderColor: 'hsl(var(--theme-primary))' }}
             ></div>
+            <p className="ml-4 text-gray-400">Projekte werden geladen...</p>
           </div>
-        ) : (
-          <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
-            {displayProjects.map((project, index) => {
-              const IconComponent = iconMap[project.icon as keyof typeof iconMap] || iconMap[project.category as keyof typeof iconMap] || iconMap.default;
-              return (
-                <Card 
-                  key={project.id} 
-                  className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer hover:shadow-lg"
-                  style={{ 
-                    animationDelay: `${index * 100}ms`,
-                    borderColor: 'rgba(255, 255, 255, 0.1)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.5)';
-                    e.currentTarget.style.boxShadow = `0 20px 40px hsl(var(--theme-primary) / 0.2)`;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                    e.currentTarget.style.boxShadow = 'none';
-                  }}
-                  onClick={() => handleProjectClick(project.id)}
-                >
-                  <div className="relative overflow-hidden rounded-t-lg">
-                    <img 
-                      src={project.image_url || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop'} 
-                      alt={project.title}
-                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300 filter brightness-50 group-hover:brightness-75"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop';
-                      }}
-                    />
-                    <div className="absolute top-4 right-4">
-                      <Badge className={`${getStatusColor(project.status)} font-medium border`}>
-                        {project.status}
-                      </Badge>
-                    </div>
-                    <div 
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
-                      style={{ background: 'hsl(var(--theme-primary) / 0.2)' }}
-                    >
-                      <ExternalLink className="text-white h-8 w-8" />
-                    </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-red-400 mb-4">Fehler beim Laden der Projekte: {error.message}</p>
+            <p className="text-gray-400">Fallback-Projekte werden angezeigt:</p>
+          </div>
+        ) : null}
+
+        <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
+          {displayProjects.map((project, index) => {
+            const IconComponent = iconMap[project.icon as keyof typeof iconMap] || 
+                                 iconMap[project.category as keyof typeof iconMap] || 
+                                 iconMap.default;
+            
+            console.log('Rendering project:', project.title, 'with icon:', project.icon);
+            
+            return (
+              <Card 
+                key={project.id} 
+                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer hover:shadow-lg"
+                style={{ 
+                  animationDelay: `${index * 100}ms`,
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.5)';
+                  e.currentTarget.style.boxShadow = `0 20px 40px hsl(var(--theme-primary) / 0.2)`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                onClick={() => handleProjectClick(project.id)}
+              >
+                <div className="relative overflow-hidden rounded-t-lg">
+                  <img 
+                    src={project.image_url || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop'} 
+                    alt={project.title}
+                    className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300 filter brightness-50 group-hover:brightness-75"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop';
+                    }}
+                  />
+                  <div className="absolute top-4 right-4">
+                    <Badge className={`${getStatusColor(project.status)} font-medium border`}>
+                      {project.status}
+                    </Badge>
                   </div>
-                  
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center space-x-3">
-                      <div 
-                        className="p-2 rounded-lg border"
-                        style={{ 
-                          background: 'hsl(var(--theme-primary) / 0.1)',
-                          borderColor: 'hsl(var(--theme-primary) / 0.3)'
-                        }}
-                      >
-                        <IconComponent 
-                          className="h-6 w-6"
-                          style={{ color: 'hsl(var(--theme-primary))' }}
-                        />
-                      </div>
-                      <CardTitle 
-                        className="text-xl font-bold text-white group-hover:transition-colors"
-                        style={{ 
-                          '--hover-color': 'hsl(var(--theme-primary))'
+                  <div 
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+                    style={{ background: 'hsl(var(--theme-primary) / 0.2)' }}
+                  >
+                    <ExternalLink className="text-white h-8 w-8" />
+                  </div>
+                </div>
+                
+                <CardHeader className="pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="p-2 rounded-lg border border-gray-600"
+                      style={{ 
+                        background: 'rgba(255, 255, 255, 0.1)',
+                      }}
+                    >
+                      <IconComponent 
+                        className="h-6 w-6 text-white"
+                      />
+                    </div>
+                    <CardTitle 
+                      className="text-xl font-bold text-white group-hover:transition-colors"
+                      style={{ 
+                        '--hover-color': 'hsl(var(--theme-primary))'
+                      } as React.CSSProperties}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = 'hsl(var(--theme-primary))';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = 'white';
+                      }}
+                    >
+                      {project.title}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <CardDescription className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
+                    {project.description}
+                  </CardDescription>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags?.slice(0, 3).map((tag: string) => (
+                      <Badge 
+                        key={tag} 
+                        variant="secondary" 
+                        className="bg-gray-800/50 text-gray-300 border border-gray-700 hover:transition-colors"
+                        style={{
+                          '--hover-bg': 'hsl(var(--theme-primary) / 0.1)',
+                          '--hover-text': 'hsl(var(--theme-primary))',
+                          '--hover-border': 'hsl(var(--theme-primary) / 0.3)'
                         } as React.CSSProperties}
                         onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'hsl(var(--theme-primary) / 0.1)';
                           e.currentTarget.style.color = 'hsl(var(--theme-primary))';
+                          e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.3)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.color = 'white';
+                          e.currentTarget.style.background = 'rgba(31, 41, 55, 0.5)';
+                          e.currentTarget.style.color = 'rgb(209, 213, 219)';
+                          e.currentTarget.style.borderColor = 'rgb(55, 65, 81)';
                         }}
                       >
-                        {project.title}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0">
-                    <CardDescription className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
-                      {project.description}
-                    </CardDescription>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tags?.slice(0, 3).map((tag: string) => (
-                        <Badge 
-                          key={tag} 
-                          variant="secondary" 
-                          className="bg-gray-800/50 text-gray-300 border border-gray-700 hover:transition-colors"
-                          style={{
-                            '--hover-bg': 'hsl(var(--theme-primary) / 0.1)',
-                            '--hover-text': 'hsl(var(--theme-primary))',
-                            '--hover-border': 'hsl(var(--theme-primary) / 0.3)'
-                          } as React.CSSProperties}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'hsl(var(--theme-primary) / 0.1)';
-                            e.currentTarget.style.color = 'hsl(var(--theme-primary))';
-                            e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.3)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'rgba(31, 41, 55, 0.5)';
-                            e.currentTarget.style.color = 'rgb(209, 213, 219)';
-                            e.currentTarget.style.borderColor = 'rgb(55, 65, 81)';
-                          }}
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                      {project.tags?.length > 3 && (
-                        <Badge 
-                          variant="secondary" 
-                          className="bg-gray-800/50 text-gray-300"
-                        >
-                          +{project.tags.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                        {tag}
+                      </Badge>
+                    ))}
+                    {project.tags?.length > 3 && (
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-gray-800/50 text-gray-300"
+                      >
+                        +{project.tags.length - 3}
+                      </Badge>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-        {error && projects.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-400">Projekte werden geladen oder sind temporär nicht verfügbar.</p>
+        {displayProjects.length === 0 && !isLoading && (
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg">Keine Projekte verfügbar.</p>
           </div>
         )}
       </div>
