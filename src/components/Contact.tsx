@@ -7,6 +7,7 @@ import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useContactSettings } from "@/hooks/useContactSettings";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Contact = () => {
@@ -18,6 +19,7 @@ export const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
+  const { contactData, loading } = useContactSettings();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,29 +79,36 @@ export const Contact = () => {
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
-                {[
-                  { icon: Mail, title: "Email", value: "kontakt@lohrex.de" },
-                  { icon: Phone, title: "Telefon", value: "+49 (0) 123 456 789" },
-                  { icon: MapPin, title: "Adresse", value: "Musterstraße 123\n12345 Musterstadt" }
-                ].map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4">
-                    <div className="bg-blue-600/30 p-3 rounded-lg border border-blue-400/30">
-                      <item.icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">{item.title}</h4>
-                      <p className="text-blue-100 whitespace-pre-line">{item.value}</p>
-                    </div>
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-400"></div>
                   </div>
-                ))}
+                ) : (
+                  <>
+                    {[
+                      { icon: Mail, title: "Email", value: contactData.email },
+                      { icon: Phone, title: "Telefon", value: contactData.phone },
+                      { icon: MapPin, title: "Adresse", value: contactData.address }
+                    ].map((item, index) => (
+                      <div key={index} className="flex items-center space-x-4">
+                        <div className="bg-blue-600/30 p-3 rounded-lg border border-blue-400/30">
+                          <item.icon className="h-6 w-6" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold">{item.title}</h4>
+                          <p className="text-blue-100 whitespace-pre-line">{item.value}</p>
+                        </div>
+                      </div>
+                    ))}
 
-                <div className="pt-6 border-t border-blue-500/30">
-                  <h4 className="font-semibold mb-2">Geschäftszeiten</h4>
-                  <p className="text-blue-100 text-sm">
-                    Montag - Freitag: 9:00 - 18:00<br />
-                    Samstag: 10:00 - 14:00
-                  </p>
-                </div>
+                    <div className="pt-6 border-t border-blue-500/30">
+                      <h4 className="font-semibold mb-2">Geschäftszeiten</h4>
+                      <p className="text-blue-100 text-sm whitespace-pre-line">
+                        {contactData.hours}
+                      </p>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </div>

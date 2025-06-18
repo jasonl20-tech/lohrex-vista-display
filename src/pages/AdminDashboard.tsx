@@ -14,6 +14,7 @@ import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { ContactMessages } from '@/components/admin/ContactMessages';
 import { PageManagement } from '@/components/admin/PageManagement';
 import { ThemeSettings } from '@/components/admin/ThemeSettings';
+import { ContactSettings } from '@/components/admin/ContactSettings';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -279,7 +280,7 @@ const AdminDashboard = () => {
 
             {/* Management Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gray-900/50">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 bg-gray-900/50">
                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
                   Übersicht
                 </TabsTrigger>
@@ -294,6 +295,9 @@ const AdminDashboard = () => {
                 </TabsTrigger>
                 <TabsTrigger value="pages" className="text-white data-[state=active]:bg-red-900/50">
                   Seiten
+                </TabsTrigger>
+                <TabsTrigger value="contact" className="text-white data-[state=active]:bg-red-900/50">
+                  Kontakt
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="text-white data-[state=active]:bg-red-900/50">
                   Einstellungen
@@ -379,6 +383,10 @@ const AdminDashboard = () => {
 
               <TabsContent value="pages" className="mt-6">
                 <PageManagement />
+              </TabsContent>
+
+              <TabsContent value="contact" className="mt-6">
+                <ContactSettings />
               </TabsContent>
 
               <TabsContent value="settings" className="mt-6">
