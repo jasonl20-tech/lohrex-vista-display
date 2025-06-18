@@ -6,35 +6,48 @@ export const useAutoCarousel = (api: CarouselApi | undefined, interval: number =
   const intervalRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    if (!api) return;
+    if (!api) {
+      console.log('Auto-carousel: API not available yet');
+      return;
+    }
+
+    console.log('Auto-carousel: Setting up auto-scroll');
 
     const startAutoScroll = () => {
+      console.log('Auto-carousel: Starting auto-scroll');
       intervalRef.current = setInterval(() => {
+        console.log('Auto-carousel: Attempting to scroll');
         if (api.canScrollNext()) {
+          console.log('Auto-carousel: Scrolling to next');
           api.scrollNext();
         } else {
+          console.log('Auto-carousel: Scrolling to start');
           api.scrollTo(0);
         }
       }, interval);
     };
 
     const stopAutoScroll = () => {
+      console.log('Auto-carousel: Stopping auto-scroll');
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = undefined;
       }
     };
 
-    // Start auto scroll
+    // Start auto scroll immediately
     startAutoScroll();
 
-    // Pause on hover/interaction
+    // Set up hover events
     const carousel = api.rootNode();
     if (carousel) {
+      console.log('Auto-carousel: Adding event listeners');
       carousel.addEventListener('mouseenter', stopAutoScroll);
       carousel.addEventListener('mouseleave', startAutoScroll);
     }
 
     return () => {
+      console.log('Auto-carousel: Cleaning up');
       stopAutoScroll();
       if (carousel) {
         carousel.removeEventListener('mouseenter', stopAutoScroll);

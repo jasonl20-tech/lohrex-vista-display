@@ -10,7 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CarouselApi } from "@/components/ui/carousel";
 
 const testimonials = [
@@ -61,8 +61,14 @@ export const Testimonials = () => {
   const { ref: testimonialsRef, isVisible: testimonialsVisible } = useScrollAnimation();
   const [api, setApi] = useState<CarouselApi>();
 
-  // Use auto-carousel hook
-  useAutoCarousel(api, 4000);
+  // Use auto-carousel hook with 3 second interval
+  useAutoCarousel(api, 3000);
+
+  useEffect(() => {
+    if (api) {
+      console.log('Testimonials: Carousel API is ready');
+    }
+  }, [api]);
 
   return (
     <section className="py-24 bg-gradient-to-b from-black via-gray-900/20 to-black relative overflow-hidden">
@@ -89,6 +95,8 @@ export const Testimonials = () => {
             opts={{
               align: "center",
               loop: true,
+              skipSnaps: false,
+              dragFree: false,
             }}
             className="w-full max-w-6xl mx-auto"
           >
@@ -96,10 +104,10 @@ export const Testimonials = () => {
               {testimonials.map((testimonial, index) => (
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3">
                   <Card 
-                    className="modern-card hover-lift group relative overflow-hidden h-full transition-all duration-300"
+                    className="modern-card hover-lift group relative overflow-hidden h-full transition-all duration-500"
                   >
                     <CardContent className="pt-8 pb-6 relative z-10 h-full flex flex-col">
-                      <div className="absolute top-4 right-4 text-red-500/30 group-hover:text-red-500/50 transition-colors">
+                      <div className="absolute top-4 right-4 text-red-500/30 group-hover:text-red-500/50 transition-colors duration-300">
                         <Quote size={32} />
                       </div>
                       
@@ -121,7 +129,7 @@ export const Testimonials = () => {
                         ))}
                       </div>
 
-                      <p className="text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors flex-grow">
+                      <p className="text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors duration-300 flex-grow">
                         "{testimonial.text}"
                       </p>
                     </CardContent>
