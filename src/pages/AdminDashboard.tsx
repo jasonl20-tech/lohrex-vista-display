@@ -9,7 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
-import { ProjectManagement, ServiceManagement } from '@/components/admin/ProjectManagement';
+import { ProjectManagement } from '@/components/admin/ProjectManagement';
+import { ServiceManagement } from '@/components/admin/ServiceManagement';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
