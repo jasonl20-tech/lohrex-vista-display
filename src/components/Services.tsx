@@ -100,8 +100,9 @@ export const Services = () => {
             return (
               <div 
                 key={service.id}
-                className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal ${isVisible ? 'revealed' : ''}`}
+                className={`modern-card rounded-2xl p-8 hover-lift scroll-reveal cursor-pointer ${isVisible ? 'revealed' : ''}`}
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => handleServiceClick(service.id)}
               >
                 <div className="flex flex-col items-center text-center space-y-6">
                   <div className={`p-4 bg-gradient-to-br from-${theme}-600/20 to-${theme}-800/20 rounded-xl`}>
@@ -115,7 +116,10 @@ export const Services = () => {
                     </div>
                   )}
                   <Button 
-                    onClick={() => handleServiceClick(service.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleServiceClick(service.id);
+                    }}
                     className={`w-full bg-gradient-to-r from-${theme}-600 to-${theme}-700 hover:from-${theme}-700 hover:to-${theme}-800 text-white modern-button`}
                   >
                     {service.button_text}
