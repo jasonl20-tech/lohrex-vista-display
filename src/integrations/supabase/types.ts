@@ -16,6 +16,7 @@ export type Database = {
           id: string
           message: string
           name: string
+          priority: string | null
           status: string | null
           updated_at: string
         }
@@ -25,6 +26,7 @@ export type Database = {
           id?: string
           message: string
           name: string
+          priority?: string | null
           status?: string | null
           updated_at?: string
         }
@@ -34,6 +36,7 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+          priority?: string | null
           status?: string | null
           updated_at?: string
         }
