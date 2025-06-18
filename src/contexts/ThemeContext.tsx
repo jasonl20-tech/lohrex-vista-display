@@ -1,9 +1,8 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
-type Theme = 'red' | 'silver' | 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'cyan' | 'amber' | 'emerald' | 'indigo' | 'rose';
+type Theme = 'red' | 'silver' | 'blue' | 'purple' | 'green' | 'orange' | 'pink' | 'cyan' | 'amber' | 'emerald' | 'indigo' | 'rose' | 'teal' | 'violet' | 'lime' | 'slate' | 'fuchsia' | 'yellow' | 'sky' | 'emeraldDark' | 'crimson' | 'midnight';
 
 interface ThemeContextType {
   theme: Theme;

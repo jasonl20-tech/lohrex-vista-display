@@ -78,6 +78,66 @@ const themeOptions = [
     name: 'Rose Gold',
     description: 'Elegantes Roségold mit warmen Tönen',
     colors: ['#f43f5e', '#e11d48', '#881337']
+  },
+  {
+    id: 'teal',
+    name: 'Ocean Teal',
+    description: 'Beruhigendes Teal mit Meeresfeeling',
+    colors: ['#14b8a6', '#0d9488', '#134e4a']
+  },
+  {
+    id: 'violet',
+    name: 'Electric Violet',
+    description: 'Lebendiges Violett mit elektrischer Energie',
+    colors: ['#7c3aed', '#6d28d9', '#4c1d95']
+  },
+  {
+    id: 'lime',
+    name: 'Neon Lime',
+    description: 'Frisches Lime mit modernem Twist',
+    colors: ['#65a30d', '#4d7c0f', '#365314']
+  },
+  {
+    id: 'slate',
+    name: 'Dark Slate',
+    description: 'Professionelles Slate mit industriellem Look',
+    colors: ['#475569', '#334155', '#0f172a']
+  },
+  {
+    id: 'fuchsia',
+    name: 'Vibrant Fuchsia',
+    description: 'Kraftvolles Fuchsia mit lebendiger Ausstrahlung',
+    colors: ['#d946ef', '#c026d3', '#86198f']
+  },
+  {
+    id: 'yellow',
+    name: 'Sunshine Yellow',
+    description: 'Sonniges Gelb mit optimistischer Energie',
+    colors: ['#eab308', '#ca8a04', '#713f12']
+  },
+  {
+    id: 'sky',
+    name: 'Sky Blue',
+    description: 'Himmelsblaues Design mit luftiger Leichtigkeit',
+    colors: ['#0ea5e9', '#0284c7', '#0c4a6e']
+  },
+  {
+    id: 'emeraldDark',
+    name: 'Dark Emerald',
+    description: 'Dunkles Smaragdgrün mit tiefer Eleganz',
+    colors: ['#059669', '#047857', '#022c22']
+  },
+  {
+    id: 'crimson',
+    name: 'Deep Crimson',
+    description: 'Tiefes Karmesinrot mit dramatischer Wirkung',
+    colors: ['#dc2626', '#b91c1c', '#450a0a']
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight Black',
+    description: 'Elegantes Mitternachtsschwarz mit subtilen Akzenten',
+    colors: ['#1f2937', '#111827', '#030712']
   }
 ];
 
@@ -93,7 +153,7 @@ export const ThemeSettings = () => {
             Website Design
           </CardTitle>
           <CardDescription className="text-gray-400">
-            Wählen Sie das Farbschema für Ihre Website aus 12 verfügbaren Designs
+            Wählen Sie das Farbschema für Ihre Website aus 22 verfügbaren Designs
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

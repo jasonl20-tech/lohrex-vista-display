@@ -26,7 +26,17 @@ export const Hero = () => {
       amber: 'text-amber-400',
       emerald: 'text-emerald-400',
       indigo: 'text-indigo-400',
-      rose: 'text-rose-400'
+      rose: 'text-rose-400',
+      teal: 'text-teal-400',
+      violet: 'text-violet-400',
+      lime: 'text-lime-400',
+      slate: 'text-slate-400',
+      fuchsia: 'text-fuchsia-400',
+      yellow: 'text-yellow-400',
+      sky: 'text-sky-400',
+      emeraldDark: 'text-emerald-400',
+      crimson: 'text-red-400',
+      midnight: 'text-gray-400'
     };
     return themeColors[theme] || 'text-red-400';
   };
