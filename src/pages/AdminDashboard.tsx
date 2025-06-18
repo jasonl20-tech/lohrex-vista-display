@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText, CreditCard, Calendar, Backup, BookOpen, Newsletter, Upload, StickyNote, Globe, Phone, Palette, MessageSquare, Search, Target, TrendingUp, Clock, Archive, CheckCircle } from 'lucide-react';
+import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText, CreditCard, Calendar, HardDrive, BookOpen, Send, Upload, StickyNote, Globe, Phone, Palette, MessageSquare, Search, Target, TrendingUp, Clock, Archive, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
 import { ProjectManagement } from '@/components/admin/ProjectManagement';
@@ -404,7 +404,7 @@ const AdminDashboard = () => {
                   <Card className="modern-card hover-lift">
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
-                        <Backup className="w-5 h-5 mr-2 text-red-400" />
+                        <HardDrive className="w-5 h-5 mr-2 text-red-400" />
                         Backups
                       </CardTitle>
                       <CardDescription className="text-gray-400">
@@ -424,7 +424,7 @@ const AdminDashboard = () => {
                   <Card className="modern-card hover-lift">
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
-                        <Newsletter className="w-5 h-5 mr-2 text-red-400" />
+                        <Send className="w-5 h-5 mr-2 text-red-400" />
                         Newsletter
                       </CardTitle>
                       <CardDescription className="text-gray-400">

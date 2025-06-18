@@ -9,13 +9,16 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Users, Shield, Search, UserPlus } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
+
+type UserRole = Database['public']['Enums']['app_role'];
 
 interface User {
   id: string;
   email: string;
   full_name: string;
   created_at: string;
-  roles: string[];
+  roles: UserRole[];
 }
 
 export const UserManagement = () => {
@@ -60,17 +63,20 @@ export const UserManagement = () => {
 
   const updateUserRole = async (userId: string, role: string, action: 'add' | 'remove') => {
     try {
+      // Type assertion to ensure role is valid
+      const validRole = role as UserRole;
+      
       if (action === 'add') {
         const { error } = await supabase
           .from('user_roles')
-          .insert({ user_id: userId, role });
+          .insert({ user_id: userId, role: validRole });
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('user_roles')
           .delete()
           .eq('user_id', userId)
-          .eq('role', role);
+          .eq('role', validRole);
         if (error) throw error;
       }
 
