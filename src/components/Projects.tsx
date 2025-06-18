@@ -157,7 +157,8 @@ export const Projects = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div 
-              className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"
+              className="animate-spin rounded-full h-8 w-8 border-b-2"
+              style={{ borderColor: 'hsl(var(--theme-primary))' }}
             ></div>
           </div>
         ) : (
@@ -167,9 +168,18 @@ export const Projects = () => {
               return (
                 <Card 
                   key={project.id} 
-                  className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer hover:border-red-500/50 hover:shadow-lg hover:shadow-red-500/20"
+                  className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm cursor-pointer hover:shadow-lg"
                   style={{ 
-                    animationDelay: `${index * 100}ms`
+                    animationDelay: `${index * 100}ms`,
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.5)';
+                    e.currentTarget.style.boxShadow = `0 20px 40px hsl(var(--theme-primary) / 0.2)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                   onClick={() => handleProjectClick(project.id)}
                 >
@@ -188,7 +198,10 @@ export const Projects = () => {
                         {project.status}
                       </Badge>
                     </div>
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center bg-red-500/20">
+                    <div 
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
+                      style={{ background: 'hsl(var(--theme-primary) / 0.2)' }}
+                    >
                       <ExternalLink className="text-white h-8 w-8" />
                     </div>
                   </div>
@@ -196,16 +209,29 @@ export const Projects = () => {
                   <CardHeader className="pb-4">
                     <div className="flex items-center space-x-3">
                       <div 
-                        className="p-2 rounded-lg border border-red-500/30"
+                        className="p-2 rounded-lg border"
                         style={{ 
-                          background: 'rgba(239, 68, 68, 0.1)'
+                          background: 'hsl(var(--theme-primary) / 0.1)',
+                          borderColor: 'hsl(var(--theme-primary) / 0.3)'
                         }}
                       >
                         <IconComponent 
-                          className="h-6 w-6 text-red-500"
+                          className="h-6 w-6"
+                          style={{ color: 'hsl(var(--theme-primary))' }}
                         />
                       </div>
-                      <CardTitle className="text-xl font-bold text-white group-hover:text-red-400 transition-colors">
+                      <CardTitle 
+                        className="text-xl font-bold text-white group-hover:transition-colors"
+                        style={{ 
+                          '--hover-color': 'hsl(var(--theme-primary))'
+                        } as React.CSSProperties}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = 'hsl(var(--theme-primary))';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = 'white';
+                        }}
+                      >
                         {project.title}
                       </CardTitle>
                     </div>
@@ -220,7 +246,22 @@ export const Projects = () => {
                         <Badge 
                           key={tag} 
                           variant="secondary" 
-                          className="bg-gray-800/50 text-gray-300 border border-gray-700 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-colors"
+                          className="bg-gray-800/50 text-gray-300 border border-gray-700 hover:transition-colors"
+                          style={{
+                            '--hover-bg': 'hsl(var(--theme-primary) / 0.1)',
+                            '--hover-text': 'hsl(var(--theme-primary))',
+                            '--hover-border': 'hsl(var(--theme-primary) / 0.3)'
+                          } as React.CSSProperties}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'hsl(var(--theme-primary) / 0.1)';
+                            e.currentTarget.style.color = 'hsl(var(--theme-primary))';
+                            e.currentTarget.style.borderColor = 'hsl(var(--theme-primary) / 0.3)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(31, 41, 55, 0.5)';
+                            e.currentTarget.style.color = 'rgb(209, 213, 219)';
+                            e.currentTarget.style.borderColor = 'rgb(55, 65, 81)';
+                          }}
                         >
                           {tag}
                         </Badge>

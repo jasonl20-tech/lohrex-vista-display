@@ -1,4 +1,3 @@
-
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -145,7 +144,8 @@ export const Services = () => {
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <div 
-              className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"
+              className="animate-spin rounded-full h-8 w-8 border-b-2"
+              style={{ borderColor: 'hsl(var(--theme-primary))' }}
             ></div>
           </div>
         ) : (
@@ -166,19 +166,24 @@ export const Services = () => {
                 >
                   <div className="flex flex-col items-center text-center space-y-6">
                     <div 
-                      className="p-4 rounded-xl border border-red-500/30"
+                      className="p-4 rounded-xl border"
                       style={{ 
-                        background: 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.2), rgba(185, 28, 28, 0.2))'
+                        background: 'hsl(var(--theme-primary) / 0.2)',
+                        borderColor: 'hsl(var(--theme-primary) / 0.3)'
                       }}
                     >
                       <IconComponent 
-                        className="h-8 w-8 text-red-500"
+                        className="h-8 w-8"
+                        style={{ color: 'hsl(var(--theme-primary))' }}
                       />
                     </div>
                     <h3 className="text-xl font-bold text-white">{service.title}</h3>
                     <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
                     {service.price && (
-                      <div className="text-lg font-semibold text-red-400">
+                      <div 
+                        className="text-lg font-semibold"
+                        style={{ color: 'hsl(var(--theme-primary))' }}
+                      >
                         ab {service.price}€
                       </div>
                     )}
@@ -187,7 +192,10 @@ export const Services = () => {
                         e.stopPropagation();
                         handleServiceClick(service.id);
                       }}
-                      className="w-full text-white bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 border-0"
+                      className="w-full text-white border-0"
+                      style={{ 
+                        background: `linear-gradient(to right, hsl(var(--theme-primary)), hsl(var(--theme-secondary)))`,
+                      }}
                     >
                       {service.button_text}
                     </Button>
