@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Mail, Eye, Reply, Clock } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Mail, Eye, Reply, Clock, ArrowUp, ArrowDown, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -17,12 +18,15 @@ interface ContactMessage {
   email: string;
   message: string;
   status: 'unread' | 'read' | 'replied';
+  priority: 'low' | 'normal' | 'high';
   created_at: string;
   updated_at: string;
 }
 
 export const ContactMessages = () => {
   const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
   const queryClient = useQueryClient();
 
   const { data: messages = [], isLoading } = useQuery({
@@ -31,6 +35,7 @@ export const ContactMessages = () => {
       const { data, error } = await supabase
         .from('contact_messages')
         .select('*')
+        .order('priority', { ascending: false })
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -38,17 +43,17 @@ export const ContactMessages = () => {
     }
   });
 
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+  const updateMessageMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<ContactMessage> }) => {
       const { error } = await supabase
         .from('contact_messages')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-messages'] });
-      toast.success('Status aktualisiert');
+      toast.success('Nachricht aktualisiert');
     },
     onError: (error) => {
       toast.error('Fehler beim Aktualisieren: ' + error.message);
@@ -81,14 +86,34 @@ export const ContactMessages = () => {
   const handleMessageClick = (message: ContactMessage) => {
     setSelectedMessage(message);
     if (message.status === 'unread') {
-      updateStatusMutation.mutate({ id: message.id, status: 'read' });
+      updateMessageMutation.mutate({ id: message.id, updates: { status: 'read' } });
     }
   };
 
   const handleReply = (email: string) => {
     window.location.href = `mailto:${email}`;
     if (selectedMessage) {
-      updateStatusMutation.mutate({ id: selectedMessage.id, status: 'replied' });
+      updateMessageMutation.mutate({ id: selectedMessage.id, updates: { status: 'replied' } });
+    }
+  };
+
+  const handleStatusChange = (messageId: string, status: string) => {
+    updateMessageMutation.mutate({ 
+      id: messageId, 
+      updates: { status: status as 'unread' | 'read' | 'replied' } 
+    });
+    if (selectedMessage?.id === messageId) {
+      setSelectedMessage({ ...selectedMessage, status: status as 'unread' | 'read' | 'replied' });
+    }
+  };
+
+  const handlePriorityChange = (messageId: string, priority: string) => {
+    updateMessageMutation.mutate({ 
+      id: messageId, 
+      updates: { priority: priority as 'low' | 'normal' | 'high' } 
+    });
+    if (selectedMessage?.id === messageId) {
+      setSelectedMessage({ ...selectedMessage, priority: priority as 'low' | 'normal' | 'high' });
     }
   };
 
@@ -110,6 +135,38 @@ export const ContactMessages = () => {
     }
   };
 
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'bg-red-900/50 text-red-400 border-red-500/30';
+      case 'normal': return 'bg-blue-900/50 text-blue-400 border-blue-500/30';
+      case 'low': return 'bg-gray-900/50 text-gray-400 border-gray-500/30';
+      default: return 'bg-blue-900/50 text-blue-400 border-blue-500/30';
+    }
+  };
+
+  const getPriorityText = (priority: string) => {
+    switch (priority) {
+      case 'high': return 'Hoch';
+      case 'normal': return 'Normal';
+      case 'low': return 'Niedrig';
+      default: return 'Normal';
+    }
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case 'high': return <AlertCircle className="w-3 h-3" />;
+      case 'low': return <ArrowDown className="w-3 h-3" />;
+      default: return null;
+    }
+  };
+
+  const filteredMessages = messages.filter(message => {
+    const statusMatch = filterStatus === 'all' || message.status === filterStatus;
+    const priorityMatch = filterPriority === 'all' || message.priority === filterPriority;
+    return statusMatch && priorityMatch;
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -122,9 +179,33 @@ export const ContactMessages = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-2xl font-bold text-white">Kontaktanfragen</h3>
-        <Badge className="bg-blue-900/50 text-blue-400 border-blue-500/30">
-          {messages.filter(m => m.status === 'unread').length} ungelesen
-        </Badge>
+        <div className="flex gap-4 items-center">
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-40 bg-gray-800 border-gray-700 text-white">
+              <SelectValue placeholder="Status filtern" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectItem value="all">Alle Status</SelectItem>
+              <SelectItem value="unread">Ungelesen</SelectItem>
+              <SelectItem value="read">Gelesen</SelectItem>
+              <SelectItem value="replied">Beantwortet</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterPriority} onValueChange={setFilterPriority}>
+            <SelectTrigger className="w-40 bg-gray-800 border-gray-700 text-white">
+              <SelectValue placeholder="Priorität filtern" />
+            </SelectTrigger>
+            <SelectContent className="bg-gray-800 border-gray-700">
+              <SelectItem value="all">Alle Prioritäten</SelectItem>
+              <SelectItem value="high">Hoch</SelectItem>
+              <SelectItem value="normal">Normal</SelectItem>
+              <SelectItem value="low">Niedrig</SelectItem>
+            </SelectContent>
+          </Select>
+          <Badge className="bg-blue-900/50 text-blue-400 border-blue-500/30">
+            {messages.filter(m => m.status === 'unread').length} ungelesen
+          </Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -133,13 +214,13 @@ export const ContactMessages = () => {
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
               <Mail className="w-5 h-5" />
-              Nachrichten ({messages.length})
+              Nachrichten ({filteredMessages.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-96">
               <div className="space-y-2 p-4">
-                {messages.map((message) => (
+                {filteredMessages.map((message) => (
                   <div
                     key={message.id}
                     onClick={() => handleMessageClick(message)}
@@ -150,10 +231,18 @@ export const ContactMessages = () => {
                     }`}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium text-white truncate">{message.name}</h4>
-                      <Badge className={getStatusColor(message.status)}>
-                        {getStatusText(message.status)}
-                      </Badge>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium text-white truncate">{message.name}</h4>
+                        {getPriorityIcon(message.priority || 'normal')}
+                      </div>
+                      <div className="flex gap-1">
+                        <Badge className={getPriorityColor(message.priority || 'normal')}>
+                          {getPriorityText(message.priority || 'normal')}
+                        </Badge>
+                        <Badge className={getStatusColor(message.status)}>
+                          {getStatusText(message.status)}
+                        </Badge>
+                      </div>
                     </div>
                     <p className="text-sm text-gray-400 mb-2">{message.email}</p>
                     <p className="text-sm text-gray-300 line-clamp-2">{message.message}</p>
@@ -163,9 +252,9 @@ export const ContactMessages = () => {
                     </div>
                   </div>
                 ))}
-                {messages.length === 0 && (
+                {filteredMessages.length === 0 && (
                   <div className="text-center py-8 text-gray-400">
-                    Keine Kontaktanfragen vorhanden
+                    {messages.length === 0 ? 'Keine Kontaktanfragen vorhanden' : 'Keine Nachrichten entsprechen den Filterkriterien'}
                   </div>
                 )}
               </div>
@@ -197,14 +286,43 @@ export const ContactMessages = () => {
                     {format(new Date(selectedMessage.created_at), 'dd. MMMM yyyy, HH:mm', { locale: de })}
                   </p>
                 </div>
-                <div>
-                  <label className="text-sm font-medium text-gray-300">Status:</label>
-                  <div className="mt-1">
-                    <Badge className={getStatusColor(selectedMessage.status)}>
-                      {getStatusText(selectedMessage.status)}
-                    </Badge>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-300 block mb-2">Status:</label>
+                    <Select 
+                      value={selectedMessage.status} 
+                      onValueChange={(value) => handleStatusChange(selectedMessage.id, value)}
+                    >
+                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="unread">Ungelesen</SelectItem>
+                        <SelectItem value="read">Gelesen</SelectItem>
+                        <SelectItem value="replied">Beantwortet</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-300 block mb-2">Priorität:</label>
+                    <Select 
+                      value={selectedMessage.priority || 'normal'} 
+                      onValueChange={(value) => handlePriorityChange(selectedMessage.id, value)}
+                    >
+                      <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-800 border-gray-700">
+                        <SelectItem value="high">Hoch</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="low">Niedrig</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
+
                 <div>
                   <label className="text-sm font-medium text-gray-300">Nachricht:</label>
                   <div className="mt-2 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
@@ -222,7 +340,7 @@ export const ContactMessages = () => {
                   {selectedMessage.status !== 'read' && (
                     <Button
                       variant="outline"
-                      onClick={() => updateStatusMutation.mutate({ id: selectedMessage.id, status: 'read' })}
+                      onClick={() => handleStatusChange(selectedMessage.id, 'read')}
                       className="border-gray-600 text-gray-300 hover:bg-gray-700"
                     >
                       <Eye className="w-4 h-4 mr-2" />
