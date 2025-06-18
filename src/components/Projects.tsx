@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Code, Smartphone, Globe, Database, Cpu, Monitor, Shield, Cloud, Camera, Palette, Rocket, Heart } from "lucide-react";
@@ -14,14 +13,8 @@ const iconMap = {
   "IoT": Cpu,
   "Enterprise": Code,
   "Cloud": Cloud,
-  Code,
-  Globe,
-  Smartphone,
-  Database,
-  Cpu,
   Monitor,
   Shield,
-  Cloud,
   Camera,
   Palette,
   Rocket,
