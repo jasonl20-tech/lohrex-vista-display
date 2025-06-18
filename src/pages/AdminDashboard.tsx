@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +13,7 @@ import { ProjectManagement } from '@/components/admin/ProjectManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { ContactMessages } from '@/components/admin/ContactMessages';
 import { PageManagement } from '@/components/admin/PageManagement';
+import { ThemeSettings } from '@/components/admin/ThemeSettings';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -382,9 +382,7 @@ const AdminDashboard = () => {
               </TabsContent>
 
               <TabsContent value="settings" className="mt-6">
-                <div className="text-center py-12">
-                  <p className="text-gray-400">Einstellungen werden bald verfügbar sein.</p>
-                </div>
+                <ThemeSettings />
               </TabsContent>
             </Tabs>
           </>
