@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -6,11 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen } from 'lucide-react';
+import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
 import { ProjectManagement } from '@/components/admin/ProjectManagement';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
+import { ContactMessages } from '@/components/admin/ContactMessages';
+import { PageManagement } from '@/components/admin/PageManagement';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -20,6 +23,7 @@ const AdminDashboard = () => {
     totalServices: 0,
     totalImages: 0,
     totalProjects: 0,
+    unreadMessages: 0,
   });
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
@@ -104,20 +108,33 @@ const AdminDashboard = () => {
         }
       };
 
-      const [totalUsers, totalServices, totalImages, totalProjects] = await Promise.all([
+      const getUnreadMessagesCount = async () => {
+        try {
+          const { count, error } = await supabase.from('contact_messages').select('id', { count: 'exact' }).eq('status', 'unread');
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
+          console.log('Contact messages table not accessible:', err);
+          return 0;
+        }
+      };
+
+      const [totalUsers, totalServices, totalImages, totalProjects, unreadMessages] = await Promise.all([
         getProfilesCount(),
         getServicesCount(),
         getImagesCount(),
-        getProjectsCount()
+        getProjectsCount(),
+        getUnreadMessagesCount()
       ]);
 
-      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages, totalProjects });
+      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages, totalProjects, unreadMessages });
 
       setStats({
         totalUsers,
         totalServices,
         totalImages,
         totalProjects,
+        unreadMessages,
       });
     } catch (error) {
       console.error('🎯 Error loading stats:', error);
@@ -203,7 +220,7 @@ const AdminDashboard = () => {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
               <Card className="modern-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Benutzer</CardTitle>
@@ -247,19 +264,36 @@ const AdminDashboard = () => {
                   <p className="text-xs text-gray-400">Galerie Bilder</p>
                 </CardContent>
               </Card>
+
+              <Card className="modern-card">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-300">Nachrichten</CardTitle>
+                  <Mail className="h-4 w-4 text-red-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stats.unreadMessages}</div>
+                  <p className="text-xs text-gray-400">Ungelesen</p>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Management Tabs */}
             <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-gray-900/50">
+              <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 bg-gray-900/50">
                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
                   Übersicht
+                </TabsTrigger>
+                <TabsTrigger value="messages" className="text-white data-[state=active]:bg-red-900/50">
+                  Nachrichten
                 </TabsTrigger>
                 <TabsTrigger value="projects" className="text-white data-[state=active]:bg-red-900/50">
                   Projekte
                 </TabsTrigger>
                 <TabsTrigger value="services" className="text-white data-[state=active]:bg-red-900/50">
                   Services
+                </TabsTrigger>
+                <TabsTrigger value="pages" className="text-white data-[state=active]:bg-red-900/50">
+                  Seiten
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="text-white data-[state=active]:bg-red-900/50">
                   Einstellungen
@@ -331,12 +365,20 @@ const AdminDashboard = () => {
                 </div>
               </TabsContent>
 
+              <TabsContent value="messages" className="mt-6">
+                <ContactMessages />
+              </TabsContent>
+
               <TabsContent value="projects" className="mt-6">
                 <ProjectManagement />
               </TabsContent>
 
               <TabsContent value="services" className="mt-6">
                 <ServiceManagement />
+              </TabsContent>
+
+              <TabsContent value="pages" className="mt-6">
+                <PageManagement />
               </TabsContent>
 
               <TabsContent value="settings" className="mt-6">

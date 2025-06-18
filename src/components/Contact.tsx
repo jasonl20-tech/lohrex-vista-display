@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Contact = () => {
   const [formData, setFormData] = useState({
@@ -14,20 +15,33 @@ export const Contact = () => {
     email: '',
     message: ''
   });
-  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: contentRef, isVisible: contentVisible } = useScrollAnimation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Kontaktformular abgesendet:', formData);
+    setIsSubmitting(true);
     
-    toast({
-      title: "Nachricht gesendet!",
-      description: "Vielen Dank für Ihre Nachricht. Wir melden uns schnellstmöglich bei Ihnen.",
-    });
-    
-    setFormData({ name: '', email: '', message: '' });
+    try {
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([{
+          name: formData.name,
+          email: formData.email,
+          message: formData.message
+        }]);
+
+      if (error) throw error;
+
+      toast.success("Nachricht gesendet! Vielen Dank für Ihre Nachricht. Wir melden uns schnellstmöglich bei Ihnen.");
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Fehler beim Senden der Nachricht:', error);
+      toast.error("Fehler beim Senden der Nachricht. Bitte versuchen Sie es später erneut.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -156,9 +170,10 @@ export const Contact = () => {
                     <Button 
                       type="submit" 
                       size="lg"
+                      disabled={isSubmitting}
                       className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-medium group hover-lift animate-pulse-glow"
                     >
-                      Nachricht senden
+                      {isSubmitting ? 'Wird gesendet...' : 'Nachricht senden'}
                       <Send className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </div>
@@ -172,8 +187,8 @@ export const Contact = () => {
         <div className="mt-20 pt-8 border-t border-gray-800 text-center">
           <p className="text-gray-400">
             © 2024 Lohrex. Alle Rechte vorbehalten. | 
-            <span className="text-blue-400 ml-1 hover:text-blue-300 cursor-pointer">Datenschutz</span> | 
-            <span className="text-blue-400 ml-1 hover:text-blue-300 cursor-pointer">Impressum</span>
+            <a href="/datenschutz" className="text-blue-400 ml-1 hover:text-blue-300 cursor-pointer">Datenschutz</a> | 
+            <a href="/impressum" className="text-blue-400 ml-1 hover:text-blue-300 cursor-pointer">Impressum</a>
           </p>
         </div>
       </div>

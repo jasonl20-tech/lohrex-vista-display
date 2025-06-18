@@ -10,6 +10,8 @@ import ServiceDetail from "./pages/ServiceDetail";
 import ProjectDetail from "./pages/ProjectDetail";
 import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
+import Datenschutz from "./pages/Datenschutz";
+import Impressum from "./pages/Impressum";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/service/:serviceId" element={<ServiceDetail />} />
         <Route path="/project/:projectId" element={<ProjectDetail />} />
+        <Route path="/datenschutz" element={<Datenschutz />} />
+        <Route path="/impressum" element={<Impressum />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
