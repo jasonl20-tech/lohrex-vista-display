@@ -14,6 +14,7 @@ import { ThemeSettings } from '@/components/admin/ThemeSettings';
 import { ContactSettings } from '@/components/admin/ContactSettings';
 import { ServiceManagement } from '@/components/admin/ServiceManagement';
 import { ProjectManagement } from '@/components/admin/ProjectManagement';
+import { PageManagement } from '@/components/admin/PageManagement';
 import { QuickActionCards } from './QuickActionCards';
 
 interface AdminTabsProps {
@@ -238,9 +239,14 @@ export const AdminTabs = ({ activeTab, setActiveTab, navigateToSection, setupFir
 
         {/* Settings */}
         {activeTab === 'settings' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <ThemeSettings />
-            <ContactSettings />
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ThemeSettings />
+              <ContactSettings />
+            </div>
+            <div>
+              <PageManagement />
+            </div>
           </div>
         )}
       </div>
