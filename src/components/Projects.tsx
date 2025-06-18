@@ -1,9 +1,10 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, Code, Smartphone, Globe, Database, Cpu } from "lucide-react";
+import { ExternalLink, Code, Smartphone, Globe, Database, Cpu, Monitor, Shield, Cloud, Camera, Palette, Rocket, Heart } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 const iconMap = {
@@ -12,13 +13,26 @@ const iconMap = {
   "Data Science": Database,
   "IoT": Cpu,
   "Enterprise": Code,
-  "Cloud": Globe,
+  "Cloud": Cloud,
+  Code,
+  Globe,
+  Smartphone,
+  Database,
+  Cpu,
+  Monitor,
+  Shield,
+  Cloud,
+  Camera,
+  Palette,
+  Rocket,
+  Heart,
   default: Code
 };
 
 export const Projects = () => {
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
+  const navigate = useNavigate();
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
@@ -51,6 +65,10 @@ export const Projects = () => {
     }
   };
 
+  const handleProjectClick = (projectId: string) => {
+    navigate(`/project/${projectId}`);
+  };
+
   if (isLoading) {
     return (
       <section id="projects" className="py-20 bg-black">
@@ -78,12 +96,13 @@ export const Projects = () => {
 
         <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
           {projects.map((project, index) => {
-            const IconComponent = iconMap[project.category as keyof typeof iconMap] || iconMap.default;
+            const IconComponent = iconMap[project.icon as keyof typeof iconMap] || iconMap[project.category as keyof typeof iconMap] || iconMap.default;
             return (
               <Card 
                 key={project.id} 
-                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-blue-500/50 hover-glow"
+                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-blue-500/50 hover-glow cursor-pointer"
                 style={{ animationDelay: `${index * 100}ms` }}
+                onClick={() => handleProjectClick(project.id)}
               >
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
@@ -113,11 +132,11 @@ export const Projects = () => {
                 </CardHeader>
                 
                 <CardContent className="pt-0">
-                  <CardDescription className="text-gray-300 mb-4 leading-relaxed">
+                  <CardDescription className="text-gray-300 mb-4 leading-relaxed line-clamp-3">
                     {project.description}
                   </CardDescription>
                   <div className="flex flex-wrap gap-2">
-                    {project.tags?.map((tag: string) => (
+                    {project.tags?.slice(0, 3).map((tag: string) => (
                       <Badge 
                         key={tag} 
                         variant="secondary" 
@@ -126,6 +145,14 @@ export const Projects = () => {
                         {tag}
                       </Badge>
                     ))}
+                    {project.tags?.length > 3 && (
+                      <Badge 
+                        variant="secondary" 
+                        className="bg-gray-800/50 text-gray-300"
+                      >
+                        +{project.tags.length - 3}
+                      </Badge>
+                    )}
                   </div>
                 </CardContent>
               </Card>

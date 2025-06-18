@@ -23,6 +23,8 @@ interface Project {
   image_url: string;
   featured: boolean;
   active: boolean;
+  icon: string;
+  project_url: string;
 }
 
 interface ProjectFormProps {
@@ -38,12 +40,19 @@ export const ProjectForm = ({ project, onClose, onSuccess }: ProjectFormProps) =
     status: project?.status || 'Planung',
     category: project?.category || '',
     image_url: project?.image_url || '',
+    icon: project?.icon || 'Code',
+    project_url: project?.project_url || '',
     featured: project?.featured || false,
     active: project?.active !== false,
   });
   
   const [tags, setTags] = useState<string[]>(project?.tags || []);
   const [newTag, setNewTag] = useState('');
+
+  const availableIcons = [
+    'Code', 'Globe', 'Smartphone', 'Database', 'Cpu', 'Monitor', 
+    'Shield', 'Cloud', 'Camera', 'Palette', 'Rocket', 'Heart'
+  ];
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -54,7 +63,6 @@ export const ProjectForm = ({ project, onClose, onSuccess }: ProjectFormProps) =
       };
 
       if (project) {
-        // Update existing project
         const { error } = await supabase
           .from('projects')
           .update(projectData)
@@ -62,7 +70,6 @@ export const ProjectForm = ({ project, onClose, onSuccess }: ProjectFormProps) =
         
         if (error) throw error;
       } else {
-        // Create new project
         const { error } = await supabase
           .from('projects')
           .insert([projectData]);
@@ -105,7 +112,7 @@ export const ProjectForm = ({ project, onClose, onSuccess }: ProjectFormProps) =
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-gray-900 border-gray-800">
+      <DialogContent className="sm:max-w-[700px] bg-gray-900 border-gray-800 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-white">
             {project ? 'Projekt bearbeiten' : 'Neues Projekt erstellen'}
@@ -167,11 +174,38 @@ export const ProjectForm = ({ project, onClose, onSuccess }: ProjectFormProps) =
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="icon" className="text-white">Icon</Label>
+              <Select value={formData.icon} onValueChange={(value) => setFormData({ ...formData, icon: value })}>
+                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700">
+                  {availableIcons.map((icon) => (
+                    <SelectItem key={icon} value={icon}>{icon}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="image_url" className="text-white">Bild URL</Label>
               <Input
                 id="image_url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                className="bg-gray-800 border-gray-700 text-white"
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="project_url" className="text-white">Projekt URL</Label>
+              <Input
+                id="project_url"
+                value={formData.project_url}
+                onChange={(e) => setFormData({ ...formData, project_url: e.target.value })}
                 className="bg-gray-800 border-gray-700 text-white"
                 placeholder="https://..."
               />
