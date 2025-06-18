@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,9 +16,16 @@ import Datenschutz from "./pages/Datenschutz";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
-function App() {
+const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -41,6 +49,6 @@ function App() {
       </ThemeProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;
