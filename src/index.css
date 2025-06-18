@@ -1,41 +1,30 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
 @layer base {
   :root {
     --background: 0 0% 1%;
     --foreground: 210 40% 98%;
-
     --card: 0 0% 3%;
     --card-foreground: 210 40% 98%;
-
     --popover: 0 0% 3%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 210 40% 6%;
     --muted-foreground: 215.4 16.3% 70%;
-
     --accent: 210 40% 6%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 8%;
     --input: 214.3 31.8% 8%;
     --ring: 222.2 84% 4.9%;
-
     --radius: 0.75rem;
-
     --sidebar-background: 0 0% 1%;
     --sidebar-foreground: 240 5.3% 90%;
     --sidebar-primary: 240 5.9% 90%;
@@ -45,42 +34,33 @@
     --sidebar-border: 220 13% 6%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    /* Theme colors */
+    /* Red theme colors */
     --theme-primary: 0 84.2% 60.2%;
     --theme-secondary: 0 74.2% 50.2%;
     --theme-accent: 0 64.2% 40.2%;
   }
 
-  /* Silver theme variables */
+  /* Silver theme */
   [data-theme="silver"] {
     --background: 0 0% 98%;
     --foreground: 240 10% 3.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-
     --primary: 240 5.9% 10%;
     --primary-foreground: 0 0% 98%;
-
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
-
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-
     --accent: 240 4.8% 95.9%;
     --accent-foreground: 240 5.9% 10%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 5% 64.9%;
-
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -89,11 +69,119 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 240 5.9% 90%;
     --sidebar-ring: 240 5% 64.9%;
-
-    /* Silver theme colors */
     --theme-primary: 240 5% 64.9%;
     --theme-secondary: 240 5% 84.9%;
     --theme-accent: 240 5% 94.9%;
+  }
+
+  /* Blue theme */
+  [data-theme="blue"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 217 91% 60%;
+    --theme-secondary: 221 83% 53%;
+    --theme-accent: 224 76% 48%;
+  }
+
+  /* Purple theme */
+  [data-theme="purple"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 262 83% 58%;
+    --theme-secondary: 263 70% 50%;
+    --theme-accent: 264 56% 43%;
+  }
+
+  /* Green theme */
+  [data-theme="green"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 160 84% 39%;
+    --theme-secondary: 158 64% 52%;
+    --theme-accent: 156 39% 54%;
+  }
+
+  /* Orange theme */
+  [data-theme="orange"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 24 95% 53%;
+    --theme-secondary: 20 91% 48%;
+    --theme-accent: 17 88% 40%;
+  }
+
+  /* Pink theme */
+  [data-theme="pink"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 329 86% 70%;
+    --theme-secondary: 330 81% 60%;
+    --theme-accent: 333 71% 51%;
+  }
+
+  /* Cyan theme */
+  [data-theme="cyan"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 186 100% 42%;
+    --theme-secondary: 188 95% 37%;
+    --theme-accent: 191 87% 32%;
+  }
+
+  /* Amber theme */
+  [data-theme="amber"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 43 96% 56%;
+    --theme-secondary: 38 92% 50%;
+    --theme-accent: 32 95% 44%;
+  }
+
+  /* Emerald theme */
+  [data-theme="emerald"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 160 84% 39%;
+    --theme-secondary: 158 64% 52%;
+    --theme-accent: 156 39% 54%;
+  }
+
+  /* Indigo theme */
+  [data-theme="indigo"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 239 84% 67%;
+    --theme-secondary: 243 75% 59%;
+    --theme-accent: 245 58% 51%;
+  }
+
+  /* Rose theme */
+  [data-theme="rose"] {
+    --background: 0 0% 1%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 3%;
+    --card-foreground: 210 40% 98%;
+    --theme-primary: 347 77% 50%;
+    --theme-secondary: 350 89% 60%;
+    --theme-accent: 354 70% 54%;
   }
 }
 
@@ -108,12 +196,11 @@
   }
 }
 
-/* Modern Lava-style animations and effects */
 @layer utilities {
   .modern-lava-gradient {
     background: linear-gradient(-45deg, 
       #000000, #0d0000, #1a0000, #2d0000, 
-      #400000, #1a0000, #0d0000, #000000);
+      hsl(var(--theme-primary)), #1a0000, #0d0000, #000000);
     background-size: 600% 600%;
     animation: modernLavaFlow 8s ease-in-out infinite;
   }
@@ -121,25 +208,14 @@
   [data-theme="silver"] .modern-lava-gradient {
     background: linear-gradient(-45deg, 
       #f8f9fa, #e9ecef, #dee2e6, #ced4da, 
-      #adb5bd, #dee2e6, #e9ecef, #f8f9fa);
+      hsl(var(--theme-primary)), #dee2e6, #e9ecef, #f8f9fa);
     background-size: 600% 600%;
     animation: modernLavaFlow 8s ease-in-out infinite;
   }
 
   .modern-lava-text {
     background: linear-gradient(135deg, 
-      #ff0000, #cc0000, #990000, #ff3333, #cc0000);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 300% 300%;
-    animation: modernLavaTextFlow 6s ease-in-out infinite;
-    font-weight: 900;
-  }
-
-  [data-theme="silver"] .modern-lava-text {
-    background: linear-gradient(135deg, 
-      #495057, #6c757d, #868e96, #adb5bd, #6c757d);
+      hsl(var(--theme-primary)), hsl(var(--theme-secondary)), hsl(var(--theme-accent)), hsl(var(--theme-primary)));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -149,25 +225,18 @@
   }
 
   .glow-red-subtle {
-    box-shadow: 0 0 25px rgba(220, 38, 38, 0.2);
-  }
-
-  [data-theme="silver"] .glow-red-subtle {
-    box-shadow: 0 0 25px rgba(108, 117, 125, 0.2);
+    box-shadow: 0 0 25px hsl(var(--theme-primary) / 0.2);
   }
 
   .modern-badge {
     backdrop-filter: blur(20px);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color: hsl(var(--theme-primary) / 0.4);
   }
 
   .modern-badge:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
-  }
-
-  [data-theme="silver"] .modern-badge:hover {
-    box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+    box-shadow: 0 10px 30px hsl(var(--theme-primary) / 0.4);
   }
 
   .modern-button {
@@ -177,25 +246,20 @@
 
   .modern-button:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.5);
-  }
-
-  [data-theme="silver"] .modern-button:hover {
-    box-shadow: 0 15px 40px rgba(108, 117, 125, 0.5);
+    box-shadow: 0 15px 40px hsl(var(--theme-primary) / 0.5);
   }
 
   .modern-button-outline {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(15px);
+    border-color: hsl(var(--theme-primary) / 0.6);
+    color: hsl(var(--theme-primary));
   }
 
   .modern-button-outline:hover {
     transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(185, 28, 28, 0.3);
-  }
-
-  [data-theme="silver"] .modern-button-outline:hover {
-    box-shadow: 0 15px 40px rgba(108, 117, 125, 0.3);
+    box-shadow: 0 15px 40px hsl(var(--theme-primary) / 0.3);
+    background-color: hsl(var(--theme-primary) / 0.1);
   }
 
   .scroll-reveal {
@@ -237,25 +301,20 @@
   .modern-card {
     background: linear-gradient(145deg, rgba(0, 0, 0, 0.9), rgba(10, 0, 0, 0.8));
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(185, 28, 28, 0.2);
+    border: 1px solid hsl(var(--theme-primary) / 0.2);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   [data-theme="silver"] .modern-card {
     background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(248, 249, 250, 0.8));
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(108, 117, 125, 0.2);
+    border: 1px solid hsl(var(--theme-primary) / 0.2);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .modern-card:hover {
-    border-color: rgba(185, 28, 28, 0.5);
-    box-shadow: 0 20px 40px rgba(185, 28, 28, 0.15);
-  }
-
-  [data-theme="silver"] .modern-card:hover {
-    border-color: rgba(108, 117, 125, 0.5);
-    box-shadow: 0 20px 40px rgba(108, 117, 125, 0.15);
+    border-color: hsl(var(--theme-primary) / 0.5);
+    box-shadow: 0 20px 40px hsl(var(--theme-primary) / 0.15);
   }
 
   .animate-pulse-slow {
@@ -284,14 +343,10 @@
     position: absolute;
     inset: 0;
     padding: 2px;
-    background: linear-gradient(45deg, #cc0000, #990000, #660000);
+    background: linear-gradient(45deg, hsl(var(--theme-primary)), hsl(var(--theme-secondary)), hsl(var(--theme-accent)));
     border-radius: inherit;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
-  }
-
-  [data-theme="silver"] .gradient-border::before {
-    background: linear-gradient(45deg, #6c757d, #495057, #343a40);
   }
 }
 
