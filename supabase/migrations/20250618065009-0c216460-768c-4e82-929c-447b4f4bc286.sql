@@ -45,9 +45,18 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  -- Überprüfe, ob bereits Admin-Rollen existieren
+  -- Mache lohrejason5@gmail.com zum Admin
+  INSERT INTO public.user_roles (user_id, role)
+  SELECT id, 'admin'::app_role
+  FROM auth.users
+  WHERE email = 'lohrejason5@gmail.com'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.user_roles 
+    WHERE user_id = auth.users.id AND role = 'admin'
+  );
+  
+  -- Fallback: Wenn noch keine Admin-Rollen existieren, mache den ersten Benutzer zum Admin
   IF NOT EXISTS (SELECT 1 FROM public.user_roles WHERE role = 'admin') THEN
-    -- Hole den ersten Benutzer und mache ihn zum Admin
     INSERT INTO public.user_roles (user_id, role)
     SELECT id, 'admin'::app_role
     FROM auth.users
