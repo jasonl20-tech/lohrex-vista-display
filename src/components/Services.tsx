@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/contexts/ThemeContext";
 import { 
   Code, Smartphone, Palette, Search, ShoppingCart, Database,
   Cloud, Shield, Zap, Headphones, Globe, BarChart, 
@@ -41,6 +42,7 @@ interface ServiceItem {
 export const Services = () => {
   const { ref, isVisible } = useScrollAnimation();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const { data: services = [], isLoading } = useQuery({
     queryKey: ['service-items'],
@@ -69,7 +71,7 @@ export const Services = () => {
       <section id="services" className="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+            <div className={`animate-spin rounded-full h-8 w-8 border-b-2 border-${theme}-500`}></div>
           </div>
         </div>
       </section>
@@ -102,19 +104,19 @@ export const Services = () => {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="flex flex-col items-center text-center space-y-6">
-                  <div className="p-4 bg-gradient-to-br from-red-600/20 to-red-800/20 rounded-xl">
-                    <IconComponent className="h-8 w-8 text-red-400" />
+                  <div className={`p-4 bg-gradient-to-br from-${theme}-600/20 to-${theme}-800/20 rounded-xl`}>
+                    <IconComponent className={`h-8 w-8 text-${theme}-400`} />
                   </div>
                   <h3 className="text-xl font-bold text-white">{service.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
                   {service.price && (
-                    <div className="text-lg font-semibold text-red-400">
+                    <div className={`text-lg font-semibold text-${theme}-400`}>
                       ab {service.price}€
                     </div>
                   )}
                   <Button 
                     onClick={() => handleServiceClick(service.id)}
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white modern-button"
+                    className={`w-full bg-gradient-to-r from-${theme}-600 to-${theme}-700 hover:from-${theme}-700 hover:to-${theme}-800 text-white modern-button`}
                   >
                     {service.button_text}
                   </Button>

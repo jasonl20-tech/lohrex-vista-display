@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Code, Smartphone, Globe, Database, Cpu, Monitor, Shield, Cloud, Camera, Palette, Rocket, Heart } from "lucide-react";
@@ -5,6 +6,7 @@ import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const iconMap = {
   "Web Development": Globe,
@@ -42,6 +44,7 @@ export const Projects = () => {
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ['projects'],
@@ -66,7 +69,7 @@ export const Projects = () => {
       case "Abgeschlossen":
         return "bg-green-900/50 text-green-400 border-green-500/30";
       case "In Entwicklung":
-        return "bg-blue-900/50 text-blue-400 border-blue-500/30";
+        return `bg-${theme}-900/50 text-${theme}-400 border-${theme}-500/30`;
       case "Planung":
         return "bg-yellow-900/50 text-yellow-400 border-yellow-500/30";
       default:
@@ -83,7 +86,7 @@ export const Projects = () => {
       <section id="projects" className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+            <div className={`animate-spin rounded-full h-8 w-8 border-b-2 border-${theme}-500`}></div>
           </div>
         </div>
       </section>
@@ -109,7 +112,7 @@ export const Projects = () => {
             return (
               <Card 
                 key={project.id} 
-                className="group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-blue-500/50 hover-glow cursor-pointer"
+                className={`group hover-lift transition-all duration-300 border border-gray-800 bg-gray-900/50 backdrop-blur-sm hover:border-${theme}-500/50 hover-glow cursor-pointer`}
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => handleProjectClick(project.id)}
               >
@@ -124,17 +127,17 @@ export const Projects = () => {
                       {project.status}
                     </Badge>
                   </div>
-                  <div className="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className={`absolute inset-0 bg-${theme}-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center`}>
                     <ExternalLink className="text-white h-8 w-8" />
                   </div>
                 </div>
                 
                 <CardHeader className="pb-4">
                   <div className="flex items-center space-x-3">
-                    <div className="bg-blue-900/50 p-2 rounded-lg border border-blue-500/30">
-                      <IconComponent className="h-6 w-6 text-blue-400" />
+                    <div className={`bg-${theme}-900/50 p-2 rounded-lg border border-${theme}-500/30`}>
+                      <IconComponent className={`h-6 w-6 text-${theme}-400`} />
                     </div>
-                    <CardTitle className="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">
+                    <CardTitle className={`text-xl font-bold text-white group-hover:text-${theme}-400 transition-colors`}>
                       {project.title}
                     </CardTitle>
                   </div>
@@ -149,7 +152,7 @@ export const Projects = () => {
                       <Badge 
                         key={tag} 
                         variant="secondary" 
-                        className="bg-gray-800/50 text-gray-300 hover:bg-blue-900/50 hover:text-blue-400 transition-colors border border-gray-700 hover:border-blue-500/30"
+                        className={`bg-gray-800/50 text-gray-300 hover:bg-${theme}-900/50 hover:text-${theme}-400 transition-colors border border-gray-700 hover:border-${theme}-500/30`}
                       >
                         {tag}
                       </Badge>
