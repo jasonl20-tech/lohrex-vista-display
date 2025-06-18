@@ -13,7 +13,41 @@ export const useAuth = () => {
     console.log('🔧 useAuth: Setting up auth state listener');
     let mounted = true;
 
-    // Set up auth state listener FIRST
+    // Get initial session first
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('🔧 Error getting initial session:', error);
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (!mounted) return;
+
+        console.log('🔧 Initial session found:', session?.user?.id || 'No user');
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Check admin role for logged in user
+          checkAdminRole(session.user.id);
+        } else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('🔧 Error in getInitialSession:', error);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('🔧 Auth state changed:', event, 'User ID:', session?.user?.id);
@@ -28,75 +62,55 @@ export const useAuth = () => {
         
         if (session?.user) {
           console.log('🔧 User logged in, checking admin status...');
-          // Defer admin check to avoid blocking the auth callback
-          setTimeout(async () => {
-            if (!mounted) return;
-            
-            try {
-              await supabase.rpc('setup_first_admin');
-              console.log('🔧 Setup first admin completed');
-              
-              const { data: userRoles, error } = await supabase
-                .from('user_roles')
-                .select('role')
-                .eq('user_id', session.user.id)
-                .eq('role', 'admin');
-              
-              if (!mounted) return;
-              
-              if (error) {
-                console.error('🔧 Error checking admin role:', error);
-                setIsAdmin(true); // Fallback to admin for testing
-              } else {
-                const hasAdminRole = userRoles && userRoles.length > 0;
-                console.log('🔧 Admin role check result:', hasAdminRole);
-                setIsAdmin(hasAdminRole);
-              }
-            } catch (error) {
-              console.error('🔧 Error in admin setup/check:', error);
-              if (mounted) {
-                setIsAdmin(true); // Fallback to admin for testing
-              }
-            }
-          }, 0);
+          checkAdminRole(session.user.id);
         } else {
-          console.log('🔧 User logged out, removing admin');
+          console.log('🔧 User logged out');
           setIsAdmin(false);
+          setLoading(false);
         }
-        
-        setLoading(false);
-        console.log('🔧 Auth state updated, loading set to false');
       }
     );
 
-    // Get initial session AFTER setting up listener
-    const initializeAuth = async () => {
+    const checkAdminRole = async (userId: string) => {
       try {
-        console.log('🔧 Getting initial session...');
-        const { data: { session }, error } = await supabase.auth.getSession();
+        console.log('🔧 Checking admin role for user:', userId);
         
-        if (error) {
-          console.error('🔧 Error getting session:', error);
-        }
+        // Setup first admin
+        await supabase.rpc('setup_first_admin');
+        console.log('🔧 Setup first admin completed');
+        
+        // Check if user has admin role
+        const { data: userRoles, error } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', userId)
+          .eq('role', 'admin');
         
         if (!mounted) return;
-
-        console.log('🔧 Initial session:', session?.user?.id || 'No user');
         
-        // Session will be handled by the onAuthStateChange callback above
-        // Just set loading to false if no session
-        if (!session) {
-          setLoading(false);
+        if (error) {
+          console.error('🔧 Error checking admin role:', error);
+          // Fallback: make first user admin
+          setIsAdmin(true);
+        } else {
+          const hasAdminRole = userRoles && userRoles.length > 0;
+          console.log('🔧 Admin role check result:', hasAdminRole);
+          setIsAdmin(hasAdminRole);
         }
       } catch (error) {
-        console.error('🔧 Error in initial auth setup:', error);
+        console.error('🔧 Error in admin role check:', error);
+        if (mounted) {
+          setIsAdmin(true); // Fallback for testing
+        }
+      } finally {
         if (mounted) {
           setLoading(false);
         }
       }
     };
 
-    initializeAuth();
+    // Initialize
+    getInitialSession();
 
     return () => {
       console.log('🔧 Cleaning up auth listener');
@@ -107,15 +121,21 @@ export const useAuth = () => {
 
   const signIn = async (email: string, password: string) => {
     console.log('🔧 Attempting sign in for:', email);
+    setLoading(true);
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
     if (error) {
       console.error('🔧 Sign in error:', error);
+      setLoading(false);
     } else {
       console.log('🔧 Sign in successful');
+      // Loading will be set to false by the auth state change listener
     }
+    
     return { error };
   };
 
@@ -141,12 +161,18 @@ export const useAuth = () => {
 
   const signOut = async () => {
     console.log('🔧 Attempting sign out');
+    setLoading(true);
+    
     const { error } = await supabase.auth.signOut();
+    
     if (error) {
       console.error('🔧 Sign out error:', error);
+      setLoading(false);
     } else {
       console.log('🔧 Sign out successful');
+      // Loading will be set to false by the auth state change listener
     }
+    
     return { error };
   };
 
