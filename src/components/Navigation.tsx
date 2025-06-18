@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ProfileDropdown } from "@/components/ProfileDropdown";
 
 export const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,8 +46,8 @@ export const Navigation = () => {
           </div>
           
           {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
+            <div className="flex items-baseline space-x-8">
               {navItems.map((item) => (
                 <button 
                   key={item.id}
@@ -58,10 +59,14 @@ export const Navigation = () => {
                 </button>
               ))}
             </div>
+            
+            {/* Profile Dropdown */}
+            <ProfileDropdown />
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-4">
+            <ProfileDropdown />
             <Button
               variant="ghost"
               size="sm"
