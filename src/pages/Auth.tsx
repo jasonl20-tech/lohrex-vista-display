@@ -20,10 +20,10 @@ const Auth = () => {
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
+  // Redirect to home page if already logged in
   useEffect(() => {
     if (user) {
-      navigate('/admin');
+      navigate('/');
     }
   }, [user, navigate]);
 
@@ -38,7 +38,7 @@ const Auth = () => {
           toast.error('Login fehlgeschlagen: ' + error.message);
         } else {
           toast.success('Erfolgreich angemeldet!');
-          // Navigation happens via useEffect when user state changes
+          // Navigation zur Startseite passiert über useEffect wenn user state sich ändert
         }
       } else {
         const { error } = await signUp(email, password, fullName);
