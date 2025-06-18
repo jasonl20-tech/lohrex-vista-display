@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -55,32 +56,44 @@ const AdminDashboard = () => {
       console.log('🎯 Loading dashboard stats...');
       setDashboardLoading(true);
       
-      // Load stats with proper error handling
-      const profilesPromise = supabase.from('profiles').select('id', { count: 'exact' })
-        .then(r => r.count || 0)
-        .catch(err => {
+      // Load stats with proper async/await error handling
+      const getProfilesCount = async () => {
+        try {
+          const { count, error } = await supabase.from('profiles').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
           console.log('Profiles table not accessible:', err);
           return 0;
-        });
+        }
+      };
       
-      const servicesPromise = supabase.from('services').select('id', { count: 'exact' })
-        .then(r => r.count || 0)
-        .catch(err => {
+      const getServicesCount = async () => {
+        try {
+          const { count, error } = await supabase.from('services').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
           console.log('Services table not accessible:', err);
           return 0;
-        });
+        }
+      };
       
-      const imagesPromise = supabase.from('gallery_images').select('id', { count: 'exact' })
-        .then(r => r.count || 0)
-        .catch(err => {
+      const getImagesCount = async () => {
+        try {
+          const { count, error } = await supabase.from('gallery_images').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
           console.log('Gallery images table not accessible:', err);
           return 0;
-        });
+        }
+      };
 
       const [totalUsers, totalServices, totalImages] = await Promise.all([
-        profilesPromise,
-        servicesPromise,
-        imagesPromise
+        getProfilesCount(),
+        getServicesCount(),
+        getImagesCount()
       ]);
 
       console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages });
