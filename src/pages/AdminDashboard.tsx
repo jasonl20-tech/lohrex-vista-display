@@ -1,30 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen, Mail, FileText, CreditCard, Calendar, HardDrive, BookOpen, Send, Upload, StickyNote, Globe, Phone, Palette, MessageSquare, Search, Target, TrendingUp, Clock, Archive, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
-import { ProjectManagement } from '@/components/admin/ProjectManagement';
-import { ServiceManagement } from '@/components/admin/ServiceManagement';
-import { ContactMessages } from '@/components/admin/ContactMessages';
-import { PageManagement } from '@/components/admin/PageManagement';
-import { ThemeSettings } from '@/components/admin/ThemeSettings';
-import { ContactSettings } from '@/components/admin/ContactSettings';
-import { UserManagement } from '@/components/admin/UserManagement';
-import { Analytics } from '@/components/admin/Analytics';
-import { InvoiceManagement } from '@/components/admin/InvoiceManagement';
-import { TransactionManagement } from '@/components/admin/TransactionManagement';
-import { TaskManagement } from '@/components/admin/TaskManagement';
-import { BackupManagement } from '@/components/admin/BackupManagement';
-import { NewsletterManagement } from '@/components/admin/NewsletterManagement';
-import { FileManager } from '@/components/admin/FileManager';
-import { NotesManagement } from '@/components/admin/NotesManagement';
-import { SystemLogs } from '@/components/admin/SystemLogs';
+import { AdminHeader } from '@/components/admin/dashboard/AdminHeader';
+import { WelcomeSection } from '@/components/admin/dashboard/WelcomeSection';
+import { StatsCards } from '@/components/admin/dashboard/StatsCards';
+import { AdminTabs } from '@/components/admin/dashboard/AdminTabs';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -208,7 +191,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Navigation functions for admin cards
   const navigateToSection = (tabName: string) => {
     setActiveTab(tabName);
   };
@@ -238,32 +220,10 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
-      
-      {/* Header */}
-      <div className="border-b border-gray-800 bg-black/50 backdrop-blur-xl mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <Shield className="w-8 h-8 text-red-400" />
-              <h1 className="text-2xl font-bold modern-lava-text">Admin Dashboard</h1>
-            </div>
-            <Badge variant="secondary" className="bg-red-900/20 text-red-400 border-red-500/30">
-              Administrator
-            </Badge>
-          </div>
-        </div>
-      </div>
+      <AdminHeader userEmail={user.email || ''} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2">
-            Willkommen zurück, {user.email}
-          </h2>
-          <p className="text-gray-400">
-            Verwalten Sie Ihre Website und überwachen Sie wichtige Metriken.
-          </p>
-        </div>
+        <WelcomeSection userEmail={user.email || ''} />
 
         {dashboardLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -271,321 +231,13 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('users')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Benutzer</CardTitle>
-                  <Users className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('projects')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Projekte</CardTitle>
-                  <FolderOpen className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalProjects}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('services')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Services</CardTitle>
-                  <Settings className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalServices}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('analytics')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Galerie</CardTitle>
-                  <Database className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalImages}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('messages')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Nachrichten</CardTitle>
-                  <Mail className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.unreadMessages}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('invoicing')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Rechnungen</CardTitle>
-                  <FileText className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalInvoices}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('transactions')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Transaktionen</CardTitle>
-                  <CreditCard className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.totalTransactions}</div>
-                </CardContent>
-              </Card>
-
-              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('tasks')}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-300">Aufgaben</CardTitle>
-                  <CheckCircle className="h-4 w-4 text-red-400" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-white">{stats.pendingTasks}</div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Management Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-gray-900/50 mb-6">
-                <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
-                  Übersicht
-                </TabsTrigger>
-                <TabsTrigger value="users" className="text-white data-[state=active]:bg-red-900/50">
-                  Benutzer
-                </TabsTrigger>
-                <TabsTrigger value="analytics" className="text-white data-[state=active]:bg-red-900/50">
-                  Analytics
-                </TabsTrigger>
-                <TabsTrigger value="invoicing" className="text-white data-[state=active]:bg-red-900/50">
-                  Rechnungen
-                </TabsTrigger>
-                <TabsTrigger value="transactions" className="text-white data-[state=active]:bg-red-900/50">
-                  Buchungen
-                </TabsTrigger>
-                <TabsTrigger value="tasks" className="text-white data-[state=active]:bg-red-900/50">
-                  Aufgaben
-                </TabsTrigger>
-                <TabsTrigger value="backups" className="text-white data-[state=active]:bg-red-900/50">
-                  Backups
-                </TabsTrigger>
-                <TabsTrigger value="newsletter" className="text-white data-[state=active]:bg-red-900/50">
-                  Newsletter
-                </TabsTrigger>
-                <TabsTrigger value="files" className="text-white data-[state=active]:bg-red-900/50">
-                  Dateien
-                </TabsTrigger>
-                <TabsTrigger value="notes" className="text-white data-[state=active]:bg-red-900/50">
-                  Notizen
-                </TabsTrigger>
-                <TabsTrigger value="logs" className="text-white data-[state=active]:bg-red-900/50">
-                  Logs
-                </TabsTrigger>
-                <TabsTrigger value="settings" className="text-white data-[state=active]:bg-red-900/50">
-                  Einstellungen
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="overview" className="mt-6">
-                {/* Quick Action Cards - alle funktional */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('tasks')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <Calendar className="w-5 h-5 mr-2 text-red-400" />
-                        Aufgaben
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Aufgabenverwaltung und Terminplanung
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Aufgaben verwalten
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('backups')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <HardDrive className="w-5 h-5 mr-2 text-red-400" />
-                        Backups
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Datensicherung und Wiederherstellung
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Backup erstellen
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('newsletter')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <Send className="w-5 h-5 mr-2 text-red-400" />
-                        Newsletter
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        E-Mail Marketing und Newsletter
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Newsletter senden
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('files')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <Upload className="w-5 h-5 mr-2 text-red-400" />
-                        Dateien
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Datei-Management und Upload
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Dateien verwalten
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('notes')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <StickyNote className="w-5 h-5 mr-2 text-red-400" />
-                        Notizen
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Admin-Notizen und Kommentare
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Notizen erstellen
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => toast.info('SEO Tools werden bald verfügbar sein')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <Search className="w-5 h-5 mr-2 text-red-400" />
-                        SEO Tools
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Suchmaschinenoptimierung
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        SEO optimieren
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('logs')}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <BookOpen className="w-5 h-5 mr-2 text-red-400" />
-                        System Logs
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        System-Protokolle einsehen
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
-                        Logs anzeigen
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="modern-card hover-lift">
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-white">
-                        <Shield className="w-5 h-5 mr-2 text-red-400" />
-                        Admin Setup
-                      </CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Admin-Berechtigung einrichten
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <Button 
-                        className="w-full modern-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
-                        onClick={setupFirstAdmin}
-                      >
-                        Admin einrichten
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="users" className="mt-6">
-                <UserManagement />
-              </TabsContent>
-
-              <TabsContent value="analytics" className="mt-6">
-                <Analytics />
-              </TabsContent>
-
-              <TabsContent value="invoicing" className="mt-6">
-                <InvoiceManagement />
-              </TabsContent>
-
-              <TabsContent value="transactions" className="mt-6">
-                <TransactionManagement />
-              </TabsContent>
-
-              <TabsContent value="tasks" className="mt-6">
-                <TaskManagement />
-              </TabsContent>
-
-              <TabsContent value="backups" className="mt-6">
-                <BackupManagement />
-              </TabsContent>
-
-              <TabsContent value="newsletter" className="mt-6">
-                <NewsletterManagement />
-              </TabsContent>
-
-              <TabsContent value="files" className="mt-6">
-                <FileManager />
-              </TabsContent>
-
-              <TabsContent value="notes" className="mt-6">
-                <NotesManagement />
-              </TabsContent>
-
-              <TabsContent value="logs" className="mt-6">
-                <SystemLogs />
-              </TabsContent>
-
-              <TabsContent value="settings" className="mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ThemeSettings />
-                  <ContactSettings />
-                </div>
-              </TabsContent>
-            </Tabs>
+            <StatsCards stats={stats} navigateToSection={navigateToSection} />
+            <AdminTabs 
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              navigateToSection={navigateToSection}
+              setupFirstAdmin={setupFirstAdmin}
+            />
           </>
         )}
       </div>

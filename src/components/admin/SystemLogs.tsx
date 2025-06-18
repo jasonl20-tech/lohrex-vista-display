@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,8 +13,8 @@ interface SystemLog {
   id: string;
   log_level: string;
   message: string;
-  module: string;
-  ip_address: string;
+  module: string | null;
+  ip_address: string | null;
   metadata: any;
   created_at: string;
 }
@@ -39,7 +38,15 @@ export const SystemLogs = () => {
         .limit(100);
 
       if (error) throw error;
-      setLogs(data || []);
+      
+      // Properly type the data to match our interface
+      const typedLogs: SystemLog[] = (data || []).map(log => ({
+        ...log,
+        ip_address: log.ip_address ? String(log.ip_address) : null,
+        module: log.module || null
+      }));
+      
+      setLogs(typedLogs);
     } catch (error) {
       console.error('Fehler beim Laden der Logs:', error);
       toast.error('Fehler beim Laden der Logs');
