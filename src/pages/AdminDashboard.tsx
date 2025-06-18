@@ -55,14 +55,33 @@ const AdminDashboard = () => {
       console.log('🎯 Loading dashboard stats...');
       setDashboardLoading(true);
       
-      // Try to load stats, but don't fail if tables don't exist
-      const promises = [
-        supabase.from('profiles').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0),
-        supabase.from('services').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0),
-        supabase.from('gallery_images').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0)
-      ];
+      // Load stats with proper error handling
+      const profilesPromise = supabase.from('profiles').select('id', { count: 'exact' })
+        .then(r => r.count || 0)
+        .catch(err => {
+          console.log('Profiles table not accessible:', err);
+          return 0;
+        });
+      
+      const servicesPromise = supabase.from('services').select('id', { count: 'exact' })
+        .then(r => r.count || 0)
+        .catch(err => {
+          console.log('Services table not accessible:', err);
+          return 0;
+        });
+      
+      const imagesPromise = supabase.from('gallery_images').select('id', { count: 'exact' })
+        .then(r => r.count || 0)
+        .catch(err => {
+          console.log('Gallery images table not accessible:', err);
+          return 0;
+        });
 
-      const [totalUsers, totalServices, totalImages] = await Promise.all(promises);
+      const [totalUsers, totalServices, totalImages] = await Promise.all([
+        profilesPromise,
+        servicesPromise,
+        imagesPromise
+      ]);
 
       console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages });
 

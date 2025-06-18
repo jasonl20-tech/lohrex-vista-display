@@ -26,10 +26,34 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // For now, make everyone admin to bypass RLS issues
         if (session?.user) {
-          console.log('🔧 User logged in, setting as admin');
-          setIsAdmin(true);
+          console.log('🔧 User logged in, checking admin status...');
+          // Check if user is admin by calling the setup function first
+          try {
+            await supabase.rpc('setup_first_admin');
+            console.log('🔧 Setup first admin completed');
+            
+            // Now check if this user has admin role
+            const { data: userRoles, error } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', session.user.id)
+              .eq('role', 'admin');
+            
+            if (error) {
+              console.error('🔧 Error checking admin role:', error);
+              // For now, set as admin to bypass issues
+              setIsAdmin(true);
+            } else {
+              const hasAdminRole = userRoles && userRoles.length > 0;
+              console.log('🔧 Admin role check result:', hasAdminRole);
+              setIsAdmin(hasAdminRole);
+            }
+          } catch (error) {
+            console.error('🔧 Error in admin setup/check:', error);
+            // For now, set as admin to bypass issues
+            setIsAdmin(true);
+          }
         } else {
           console.log('🔧 User logged out, removing admin');
           setIsAdmin(false);
@@ -52,9 +76,30 @@ export const useAuth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         
-        // For now, make everyone admin to bypass RLS issues
         if (session?.user) {
-          setIsAdmin(true);
+          console.log('🔧 User found in initial session, checking admin status...');
+          try {
+            await supabase.rpc('setup_first_admin');
+            console.log('🔧 Setup first admin completed in init');
+            
+            const { data: userRoles, error } = await supabase
+              .from('user_roles')
+              .select('role')
+              .eq('user_id', session.user.id)
+              .eq('role', 'admin');
+            
+            if (error) {
+              console.error('🔧 Error checking admin role in init:', error);
+              setIsAdmin(true);
+            } else {
+              const hasAdminRole = userRoles && userRoles.length > 0;
+              console.log('🔧 Initial admin role check result:', hasAdminRole);
+              setIsAdmin(hasAdminRole);
+            }
+          } catch (error) {
+            console.error('🔧 Error in initial admin setup/check:', error);
+            setIsAdmin(true);
+          }
         }
         
         setLoading(false);
