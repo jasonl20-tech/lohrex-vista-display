@@ -12,6 +12,8 @@ import { NotesManagement } from '@/components/admin/NotesManagement';
 import { SystemLogs } from '@/components/admin/SystemLogs';
 import { ThemeSettings } from '@/components/admin/ThemeSettings';
 import { ContactSettings } from '@/components/admin/ContactSettings';
+import { ServiceManagement } from '@/components/admin/ServiceManagement';
+import { ProjectManagement } from '@/components/admin/ProjectManagement';
 import { QuickActionCards } from './QuickActionCards';
 
 interface AdminTabsProps {
@@ -24,9 +26,15 @@ interface AdminTabsProps {
 export const AdminTabs = ({ activeTab, setActiveTab, navigateToSection, setupFirstAdmin }: AdminTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-gray-900/50 mb-6">
+      <TabsList className="grid w-full grid-cols-7 lg:grid-cols-14 bg-gray-900/50 mb-6">
         <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
           Übersicht
+        </TabsTrigger>
+        <TabsTrigger value="services" className="text-white data-[state=active]:bg-red-900/50">
+          Services
+        </TabsTrigger>
+        <TabsTrigger value="projects" className="text-white data-[state=active]:bg-red-900/50">
+          Projekte
         </TabsTrigger>
         <TabsTrigger value="users" className="text-white data-[state=active]:bg-red-900/50">
           Benutzer
@@ -68,6 +76,14 @@ export const AdminTabs = ({ activeTab, setActiveTab, navigateToSection, setupFir
           navigateToSection={navigateToSection} 
           setupFirstAdmin={setupFirstAdmin} 
         />
+      </TabsContent>
+
+      <TabsContent value="services" className="mt-6">
+        <ServiceManagement />
+      </TabsContent>
+
+      <TabsContent value="projects" className="mt-6">
+        <ProjectManagement />
       </TabsContent>
 
       <TabsContent value="users" className="mt-6">
