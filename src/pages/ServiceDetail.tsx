@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,25 +21,82 @@ interface ServiceItem {
 }
 
 const ServiceDetail = () => {
-  const { serviceId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const { data: service, isLoading, error } = useQuery({
-    queryKey: ['service-detail', serviceId],
+    queryKey: ['service-detail', id],
     queryFn: async () => {
-      if (!serviceId) throw new Error('Service ID is required');
+      if (!id) throw new Error('Service ID is required');
       
       const { data, error } = await supabase
         .from('service_items')
         .select('*')
-        .eq('id', serviceId)
-        .single();
+        .eq('id', id)
+        .maybeSingle();
       
-      if (error) throw error;
-      return data as ServiceItem;
+      if (error) {
+        console.error('Database error:', error);
+        // Fallback to hardcoded service if database fails
+        return getFallbackService(id);
+      }
+      
+      return data as ServiceItem || getFallbackService(id);
     },
-    enabled: !!serviceId
+    enabled: !!id
   });
+
+  const getFallbackService = (serviceId: string): ServiceItem | null => {
+    const fallbackServices: { [key: string]: ServiceItem } = {
+      'web-dev': {
+        id: 'web-dev',
+        title: 'Web Development',
+        description: 'Moderne Websites und Web-Anwendungen mit neuesten Technologien',
+        icon: 'Globe',
+        category: 'Development',
+        price: 500,
+        active: true,
+        featured: false,
+        sort_order: 1,
+        button_text: 'Mehr erfahren',
+        service_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      'mobile-dev': {
+        id: 'mobile-dev',
+        title: 'Mobile Apps',
+        description: 'Native und Cross-Platform Apps für iOS und Android',
+        icon: 'Smartphone',
+        category: 'Development',
+        price: 800,
+        active: true,
+        featured: false,
+        sort_order: 2,
+        button_text: 'Mehr erfahren',
+        service_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      },
+      'design': {
+        id: 'design',
+        title: 'UI/UX Design',
+        description: 'Benutzerfreundliche Designs und optimale User Experience',
+        icon: 'Palette',
+        category: 'Design',
+        price: 300,
+        active: true,
+        featured: false,
+        sort_order: 3,
+        button_text: 'Mehr erfahren',
+        service_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+    };
+    
+    return fallbackServices[serviceId] || null;
+  };
 
   // Default features based on category
   const getDefaultFeatures = (category: string, title: string) => {
@@ -81,7 +137,7 @@ const ServiceDetail = () => {
     );
   }
 
-  if (error || !service) {
+  if (!service) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
