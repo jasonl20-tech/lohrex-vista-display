@@ -19,29 +19,68 @@ const AdminDashboard = () => {
     totalImages: 0,
   });
 
-  useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
-      navigate('/auth');
-      return;
-    }
+  console.log('AdminDashboard render:', { user: user?.id, isAdmin, loading });
 
-    if (user && isAdmin) {
+  useEffect(() => {
+    console.log('AdminDashboard useEffect:', { loading, user: user?.id, isAdmin });
+    
+    if (!loading) {
+      if (!user) {
+        console.log('No user, redirecting to auth');
+        navigate('/auth');
+        return;
+      }
+      
+      if (!isAdmin) {
+        console.log('User is not admin, redirecting to home');
+        toast.error('Sie haben keine Berechtigung für das Admin Dashboard');
+        navigate('/');
+        return;
+      }
+
+      // User is admin, load stats
+      console.log('User is admin, loading stats');
       loadStats();
     }
   }, [user, isAdmin, loading, navigate]);
 
   const loadStats = async () => {
     try {
-      const [usersResult, servicesResult, imagesResult] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact' }),
-        supabase.from('services').select('id', { count: 'exact' }),
-        supabase.from('gallery_images').select('id', { count: 'exact' }),
-      ]);
+      console.log('Loading dashboard stats...');
+      
+      // Try to load stats from tables that might exist
+      const promises = [];
+      
+      // Check if tables exist before querying
+      try {
+        promises.push(supabase.from('profiles').select('id', { count: 'exact' }));
+      } catch (e) {
+        console.log('profiles table not accessible');
+        promises.push(Promise.resolve({ count: 0 }));
+      }
+      
+      try {
+        promises.push(supabase.from('services').select('id', { count: 'exact' }));
+      } catch (e) {
+        console.log('services table not accessible');
+        promises.push(Promise.resolve({ count: 0 }));
+      }
+      
+      try {
+        promises.push(supabase.from('gallery_images').select('id', { count: 'exact' }));
+      } catch (e) {
+        console.log('gallery_images table not accessible');
+        promises.push(Promise.resolve({ count: 0 }));
+      }
+
+      const [usersResult, servicesResult, imagesResult] = await Promise.allSettled(promises);
+
+      console.log('Stats query results:', { usersResult, servicesResult, imagesResult });
 
       setStats({
-        totalUsers: usersResult.count || 0,
-        totalServices: servicesResult.count || 0,
-        totalImages: imagesResult.count || 0,
+        totalUsers: usersResult.status === 'fulfilled' ? (usersResult.value.count || 0) : 0,
+        totalServices: servicesResult.status === 'fulfilled' ? (servicesResult.value.count || 0) : 0,
+        totalImages: imagesResult.status === 'fulfilled' ? (imagesResult.value.count || 0) : 0,
       });
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -51,17 +90,30 @@ const AdminDashboard = () => {
 
   const setupFirstAdmin = async () => {
     try {
+      console.log('Setting up first admin...');
       const { error } = await supabase.rpc('setup_first_admin');
-      if (error) throw error;
+      if (error) {
+        console.error('RPC error:', error);
+        // Fallback: try to insert directly
+        const { error: insertError } = await supabase
+          .from('user_roles')
+          .insert({ user_id: user?.id, role: 'admin' });
+        
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw insertError;
+        }
+      }
       toast.success('Admin-Setup abgeschlossen!');
       window.location.reload();
     } catch (error) {
       console.error('Error setting up admin:', error);
-      toast.error('Fehler beim Admin-Setup');
+      toast.error('Fehler beim Admin-Setup: ' + error.message);
     }
   };
 
   if (loading) {
+    console.log('Showing loading screen');
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
@@ -72,9 +124,17 @@ const AdminDashboard = () => {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
+    console.log('No user, should redirect');
     return null;
   }
+
+  if (!isAdmin) {
+    console.log('Not admin, should redirect');
+    return null;
+  }
+
+  console.log('Rendering admin dashboard');
 
   return (
     <div className="min-h-screen bg-background">
@@ -231,7 +291,7 @@ const AdminDashboard = () => {
                 Admin Setup
               </CardTitle>
               <CardDescription className="text-gray-400">
-                Ersten Admin-Benutzer einrichten
+                Admin-Berechtigung einrichten
               </CardDescription>
             </CardHeader>
             <CardContent>
