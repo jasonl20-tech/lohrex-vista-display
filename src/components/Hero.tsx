@@ -41,6 +41,34 @@ export const Hero = () => {
     return themeColors[theme] || 'text-red-400';
   };
 
+  const getThemeButtonStyles = () => {
+    const themeStyles = {
+      red: 'border-red-500/50 bg-black/80 text-white hover:bg-red-500/20 hover:border-red-400',
+      silver: 'border-gray-400/50 bg-white/20 text-white hover:bg-gray-400/20 hover:border-gray-300',
+      blue: 'border-blue-500/50 bg-black/80 text-white hover:bg-blue-500/20 hover:border-blue-400',
+      purple: 'border-purple-500/50 bg-black/80 text-white hover:bg-purple-500/20 hover:border-purple-400',
+      green: 'border-green-500/50 bg-black/80 text-white hover:bg-green-500/20 hover:border-green-400',
+      orange: 'border-orange-500/50 bg-black/80 text-white hover:bg-orange-500/20 hover:border-orange-400',
+      pink: 'border-pink-500/50 bg-black/80 text-white hover:bg-pink-500/20 hover:border-pink-400',
+      cyan: 'border-cyan-500/50 bg-black/80 text-white hover:bg-cyan-500/20 hover:border-cyan-400',
+      amber: 'border-amber-500/50 bg-black/80 text-white hover:bg-amber-500/20 hover:border-amber-400',
+      emerald: 'border-emerald-500/50 bg-black/80 text-white hover:bg-emerald-500/20 hover:border-emerald-400',
+      indigo: 'border-indigo-500/50 bg-black/80 text-white hover:bg-indigo-500/20 hover:border-indigo-400',
+      rose: 'border-rose-500/50 bg-black/80 text-white hover:bg-rose-500/20 hover:border-rose-400',
+      teal: 'border-teal-500/50 bg-black/80 text-white hover:bg-teal-500/20 hover:border-teal-400',
+      violet: 'border-violet-500/50 bg-black/80 text-white hover:bg-violet-500/20 hover:border-violet-400',
+      lime: 'border-lime-500/50 bg-black/80 text-white hover:bg-lime-500/20 hover:border-lime-400',
+      slate: 'border-slate-400/50 bg-black/80 text-white hover:bg-slate-400/20 hover:border-slate-300',
+      fuchsia: 'border-fuchsia-500/50 bg-black/80 text-white hover:bg-fuchsia-500/20 hover:border-fuchsia-400',
+      yellow: 'border-yellow-500/50 bg-black/80 text-white hover:bg-yellow-500/20 hover:border-yellow-400',
+      sky: 'border-sky-500/50 bg-black/80 text-white hover:bg-sky-500/20 hover:border-sky-400',
+      emeraldDark: 'border-emerald-500/50 bg-black/80 text-white hover:bg-emerald-500/20 hover:border-emerald-400',
+      crimson: 'border-red-500/50 bg-black/80 text-white hover:bg-red-500/20 hover:border-red-400',
+      midnight: 'border-gray-400/50 bg-black/80 text-white hover:bg-gray-400/20 hover:border-gray-300'
+    };
+    return themeStyles[theme] || 'border-red-500/50 bg-black/80 text-white hover:bg-red-500/20 hover:border-red-400';
+  };
+
   return (
     <section id="home" className="relative pt-16 min-h-screen flex items-center overflow-hidden">
       {/* Modern Lava-Style Animated Background */}
@@ -90,7 +118,7 @@ export const Hero = () => {
               variant="outline" 
               size="lg"
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-10 py-4 text-lg font-semibold modern-button-outline shadow-xl"
+              className={`px-10 py-4 text-lg font-semibold shadow-xl backdrop-blur-sm transition-all duration-300 ${getThemeButtonStyles()}`}
             >
               Kontakt aufnehmen
             </Button>
