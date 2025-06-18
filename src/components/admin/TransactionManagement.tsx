@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { CreditCard, Plus, TrendingUp, TrendingDown, Euro } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Transaction {
   id: string;
@@ -20,10 +20,12 @@ interface Transaction {
   category: string;
   transaction_date: string;
   reference_number: string;
+  created_by: string;
   created_at: string;
 }
 
 export const TransactionManagement = () => {
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,12 +62,18 @@ export const TransactionManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast.error('Sie müssen angemeldet sein');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('transactions')
         .insert({
           ...formData,
-          amount: parseFloat(formData.amount)
+          amount: parseFloat(formData.amount),
+          created_by: user.id
         });
 
       if (error) throw error;

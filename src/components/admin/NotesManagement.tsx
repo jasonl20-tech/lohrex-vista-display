@@ -6,11 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { StickyNote, Plus, Edit, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Note {
   id: string;
@@ -18,11 +20,13 @@ interface Note {
   content: string;
   category: string;
   priority: string;
+  created_by: string;
   created_at: string;
   updated_at: string;
 }
 
 export const NotesManagement = () => {
+  const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -58,18 +62,25 @@ export const NotesManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast.error('Sie müssen angemeldet sein');
+      return;
+    }
+
     try {
       const noteData = {
         title: formData.title,
         content: formData.content,
         category: formData.category || null,
-        priority: formData.priority
+        priority: formData.priority,
+        created_by: user.id,
+        updated_at: new Date().toISOString()
       };
 
       if (editingNote) {
         const { error } = await supabase
           .from('admin_notes')
-          .update({ ...noteData, updated_at: new Date().toISOString() })
+          .update(noteData)
           .eq('id', editingNote.id);
         if (error) throw error;
         toast.success('Notiz aktualisiert');
@@ -129,7 +140,7 @@ export const NotesManagement = () => {
     const colors = {
       low: 'bg-green-500',
       normal: 'bg-blue-500',
-      high: 'bg-red-500'
+      high: 'bg-orange-500'
     };
     return colors[priority as keyof typeof colors] || 'bg-gray-500';
   };
@@ -152,7 +163,7 @@ export const NotesManagement = () => {
         <div className="flex justify-between items-center">
           <CardTitle className="flex items-center text-white">
             <StickyNote className="w-5 h-5 mr-2 text-red-400" />
-            Notizen-Verwaltung
+            Notizenverwaltung
           </CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -177,6 +188,16 @@ export const NotesManagement = () => {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label className="text-gray-300">Inhalt</Label>
+                  <Textarea
+                    value={formData.content}
+                    onChange={(e) => setFormData({...formData, content: e.target.value})}
+                    className="border-gray-700 bg-gray-800/50 text-white"
+                    rows={5}
+                    required
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-gray-300">Kategorie</Label>
@@ -184,7 +205,7 @@ export const NotesManagement = () => {
                       value={formData.category}
                       onChange={(e) => setFormData({...formData, category: e.target.value})}
                       className="border-gray-700 bg-gray-800/50 text-white"
-                      placeholder="z.B. Projekt, Bug, Idee"
+                      placeholder="Optional"
                     />
                   </div>
                   <div className="space-y-2">
@@ -201,16 +222,6 @@ export const NotesManagement = () => {
                     </Select>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-gray-300">Inhalt</Label>
-                  <Textarea
-                    value={formData.content}
-                    onChange={(e) => setFormData({...formData, content: e.target.value})}
-                    className="border-gray-700 bg-gray-800/50 text-white"
-                    rows={6}
-                    required
-                  />
-                </div>
                 <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Abbrechen
@@ -225,51 +236,59 @@ export const NotesManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {notes.map((note) => (
-            <Card key={note.id} className="bg-gray-800/50 border-gray-700">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg text-white">{note.title}</CardTitle>
-                  <div className="flex gap-1">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-gray-700">
+                <TableHead className="text-gray-300">Titel</TableHead>
+                <TableHead className="text-gray-300">Kategorie</TableHead>
+                <TableHead className="text-gray-300">Priorität</TableHead>
+                <TableHead className="text-gray-300">Erstellt</TableHead>
+                <TableHead className="text-gray-300">Aktionen</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {notes.map((note) => (
+                <TableRow key={note.id} className="border-gray-700">
+                  <TableCell className="text-white">
+                    <div>
+                      <div className="font-medium">{note.title}</div>
+                      <div className="text-sm text-gray-400 max-w-xs truncate">{note.content}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-gray-400">{note.category || '-'}</TableCell>
+                  <TableCell>
                     <Badge className={`text-white ${getPriorityColor(note.priority)}`}>
                       {note.priority}
                     </Badge>
-                  </div>
-                </div>
-                {note.category && (
-                  <Badge variant="secondary" className="w-fit bg-gray-700 text-gray-300">
-                    {note.category}
-                  </Badge>
-                )}
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-gray-300 text-sm line-clamp-4">{note.content}</p>
-                <div className="text-xs text-gray-400">
-                  Erstellt: {new Date(note.created_at).toLocaleDateString('de-DE')}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleEdit(note)}
-                    className="flex-1 border-blue-500/30 text-blue-400 hover:bg-blue-900/20"
-                  >
-                    <Edit className="w-3 h-3 mr-1" />
-                    Bearbeiten
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleDelete(note.id)}
-                    className="border-red-500/30 text-red-400 hover:bg-red-900/20"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </TableCell>
+                  <TableCell className="text-gray-400">
+                    {new Date(note.created_at).toLocaleDateString('de-DE')}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEdit(note)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleDelete(note.id)}
+                        className="border-red-600 text-red-400 hover:bg-red-900/20"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </CardContent>
     </Card>

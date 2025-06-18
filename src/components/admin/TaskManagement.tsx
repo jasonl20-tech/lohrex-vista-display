@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Calendar, Plus, Edit, Trash2, Clock } from 'lucide-react';
+import { Calendar, Plus, Edit, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Task {
   id: string;
@@ -20,11 +20,13 @@ interface Task {
   priority: string;
   status: string;
   assigned_to: string;
+  created_by: string;
   due_date: string;
   created_at: string;
 }
 
 export const TaskManagement = () => {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,13 +63,20 @@ export const TaskManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!user) {
+      toast.error('Sie müssen angemeldet sein');
+      return;
+    }
+
     try {
       const taskData = {
         title: formData.title,
         description: formData.description,
         priority: formData.priority,
         status: formData.status,
-        due_date: formData.due_date || null
+        due_date: formData.due_date || null,
+        created_by: user.id,
+        updated_at: new Date().toISOString()
       };
 
       if (editingTask) {
