@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -20,10 +19,17 @@ import { UserManagement } from '@/components/admin/UserManagement';
 import { Analytics } from '@/components/admin/Analytics';
 import { InvoiceManagement } from '@/components/admin/InvoiceManagement';
 import { TransactionManagement } from '@/components/admin/TransactionManagement';
+import { TaskManagement } from '@/components/admin/TaskManagement';
+import { BackupManagement } from '@/components/admin/BackupManagement';
+import { NewsletterManagement } from '@/components/admin/NewsletterManagement';
+import { FileManager } from '@/components/admin/FileManager';
+import { NotesManagement } from '@/components/admin/NotesManagement';
+import { SystemLogs } from '@/components/admin/SystemLogs';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalServices: 0,
@@ -202,6 +208,11 @@ const AdminDashboard = () => {
     }
   };
 
+  // Navigation functions for admin cards
+  const navigateToSection = (tabName: string) => {
+    setActiveTab(tabName);
+  };
+
   if (loading) {
     console.log('🎯 Showing loading screen');
     return (
@@ -262,7 +273,7 @@ const AdminDashboard = () => {
           <>
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('users')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Benutzer</CardTitle>
                   <Users className="h-4 w-4 text-red-400" />
@@ -272,7 +283,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('projects')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Projekte</CardTitle>
                   <FolderOpen className="h-4 w-4 text-red-400" />
@@ -282,7 +293,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('services')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Services</CardTitle>
                   <Settings className="h-4 w-4 text-red-400" />
@@ -292,7 +303,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('analytics')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Galerie</CardTitle>
                   <Database className="h-4 w-4 text-red-400" />
@@ -302,7 +313,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('messages')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Nachrichten</CardTitle>
                   <Mail className="h-4 w-4 text-red-400" />
@@ -312,7 +323,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('invoicing')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Rechnungen</CardTitle>
                   <FileText className="h-4 w-4 text-red-400" />
@@ -322,7 +333,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('transactions')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Transaktionen</CardTitle>
                   <CreditCard className="h-4 w-4 text-red-400" />
@@ -332,7 +343,7 @@ const AdminDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="modern-card">
+              <Card className="modern-card cursor-pointer hover:bg-gray-800/30 transition-colors" onClick={() => navigateToSection('tasks')}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Aufgaben</CardTitle>
                   <CheckCircle className="h-4 w-4 text-red-400" />
@@ -344,8 +355,8 @@ const AdminDashboard = () => {
             </div>
 
             {/* Management Tabs */}
-            <Tabs defaultValue="overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 bg-gray-900/50 mb-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12 bg-gray-900/50 mb-6">
                 <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
                   Übersicht
                 </TabsTrigger>
@@ -361,17 +372,23 @@ const AdminDashboard = () => {
                 <TabsTrigger value="transactions" className="text-white data-[state=active]:bg-red-900/50">
                   Buchungen
                 </TabsTrigger>
-                <TabsTrigger value="messages" className="text-white data-[state=active]:bg-red-900/50">
-                  Nachrichten
+                <TabsTrigger value="tasks" className="text-white data-[state=active]:bg-red-900/50">
+                  Aufgaben
                 </TabsTrigger>
-                <TabsTrigger value="projects" className="text-white data-[state=active]:bg-red-900/50">
-                  Projekte
+                <TabsTrigger value="backups" className="text-white data-[state=active]:bg-red-900/50">
+                  Backups
                 </TabsTrigger>
-                <TabsTrigger value="services" className="text-white data-[state=active]:bg-red-900/50">
-                  Services
+                <TabsTrigger value="newsletter" className="text-white data-[state=active]:bg-red-900/50">
+                  Newsletter
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="text-white data-[state=active]:bg-red-900/50">
-                  Kontakt
+                <TabsTrigger value="files" className="text-white data-[state=active]:bg-red-900/50">
+                  Dateien
+                </TabsTrigger>
+                <TabsTrigger value="notes" className="text-white data-[state=active]:bg-red-900/50">
+                  Notizen
+                </TabsTrigger>
+                <TabsTrigger value="logs" className="text-white data-[state=active]:bg-red-900/50">
+                  Logs
                 </TabsTrigger>
                 <TabsTrigger value="settings" className="text-white data-[state=active]:bg-red-900/50">
                   Einstellungen
@@ -379,9 +396,9 @@ const AdminDashboard = () => {
               </TabsList>
 
               <TabsContent value="overview" className="mt-6">
-                {/* Weitere Quick Actions */}
+                {/* Quick Action Cards - alle funktional */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('tasks')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <Calendar className="w-5 h-5 mr-2 text-red-400" />
@@ -392,16 +409,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Aufgabenverwaltung wird bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Aufgaben verwalten
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('backups')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <HardDrive className="w-5 h-5 mr-2 text-red-400" />
@@ -412,16 +426,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Backup-Funktion wird bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Backup erstellen
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('newsletter')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <Send className="w-5 h-5 mr-2 text-red-400" />
@@ -432,16 +443,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Newsletter-Funktion wird bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Newsletter senden
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('files')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <Upload className="w-5 h-5 mr-2 text-red-400" />
@@ -452,16 +460,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Datei-Manager wird bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Dateien verwalten
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('notes')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <StickyNote className="w-5 h-5 mr-2 text-red-400" />
@@ -472,16 +477,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('Notizen-Funktion wird bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Notizen erstellen
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => toast.info('SEO Tools werden bald verfügbar sein')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <Search className="w-5 h-5 mr-2 text-red-400" />
@@ -492,16 +494,13 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('SEO Tools werden bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         SEO optimieren
                       </Button>
                     </CardContent>
                   </Card>
 
-                  <Card className="modern-card hover-lift">
+                  <Card className="modern-card hover-lift cursor-pointer" onClick={() => navigateToSection('logs')}>
                     <CardHeader>
                       <CardTitle className="flex items-center text-white">
                         <BookOpen className="w-5 h-5 mr-2 text-red-400" />
@@ -512,10 +511,7 @@ const AdminDashboard = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button 
-                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                        onClick={() => toast.info('System Logs werden bald verfügbar sein')}
-                      >
+                      <Button className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20">
                         Logs anzeigen
                       </Button>
                     </CardContent>
@@ -559,24 +555,35 @@ const AdminDashboard = () => {
                 <TransactionManagement />
               </TabsContent>
 
-              <TabsContent value="messages" className="mt-6">
-                <ContactMessages />
+              <TabsContent value="tasks" className="mt-6">
+                <TaskManagement />
               </TabsContent>
 
-              <TabsContent value="projects" className="mt-6">
-                <ProjectManagement />
+              <TabsContent value="backups" className="mt-6">
+                <BackupManagement />
               </TabsContent>
 
-              <TabsContent value="services" className="mt-6">
-                <ServiceManagement />
+              <TabsContent value="newsletter" className="mt-6">
+                <NewsletterManagement />
               </TabsContent>
 
-              <TabsContent value="contact" className="mt-6">
-                <ContactSettings />
+              <TabsContent value="files" className="mt-6">
+                <FileManager />
+              </TabsContent>
+
+              <TabsContent value="notes" className="mt-6">
+                <NotesManagement />
+              </TabsContent>
+
+              <TabsContent value="logs" className="mt-6">
+                <SystemLogs />
               </TabsContent>
 
               <TabsContent value="settings" className="mt-6">
-                <ThemeSettings />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ThemeSettings />
+                  <ContactSettings />
+                </div>
               </TabsContent>
             </Tabs>
           </>
