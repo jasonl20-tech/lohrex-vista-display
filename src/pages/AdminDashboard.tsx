@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Settings, Database, Activity, BarChart3, Shield } from 'lucide-react';
+import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
+import { ProjectManagement } from '@/components/admin/ProjectManagement';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -17,6 +19,7 @@ const AdminDashboard = () => {
     totalUsers: 0,
     totalServices: 0,
     totalImages: 0,
+    totalProjects: 0,
   });
   const [dashboardLoading, setDashboardLoading] = useState(false);
 
@@ -90,18 +93,31 @@ const AdminDashboard = () => {
         }
       };
 
-      const [totalUsers, totalServices, totalImages] = await Promise.all([
+      const getProjectsCount = async () => {
+        try {
+          const { count, error } = await supabase.from('projects').select('id', { count: 'exact' });
+          if (error) throw error;
+          return count || 0;
+        } catch (err) {
+          console.log('Projects table not accessible:', err);
+          return 0;
+        }
+      };
+
+      const [totalUsers, totalServices, totalImages, totalProjects] = await Promise.all([
         getProfilesCount(),
         getServicesCount(),
-        getImagesCount()
+        getImagesCount(),
+        getProjectsCount()
       ]);
 
-      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages });
+      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages, totalProjects });
 
       setStats({
         totalUsers,
         totalServices,
         totalImages,
+        totalProjects,
       });
     } catch (error) {
       console.error('🎯 Error loading stats:', error);
@@ -187,7 +203,7 @@ const AdminDashboard = () => {
         ) : (
           <>
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <Card className="modern-card">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-gray-300">Benutzer</CardTitle>
@@ -196,6 +212,17 @@ const AdminDashboard = () => {
                 <CardContent>
                   <div className="text-2xl font-bold text-white">{stats.totalUsers}</div>
                   <p className="text-xs text-gray-400">Registrierte Benutzer</p>
+                </CardContent>
+              </Card>
+
+              <Card className="modern-card">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-300">Projekte</CardTitle>
+                  <FolderOpen className="h-4 w-4 text-red-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-white">{stats.totalProjects}</div>
+                  <p className="text-xs text-gray-400">Projekte gesamt</p>
                 </CardContent>
               </Card>
 
@@ -222,108 +249,104 @@ const AdminDashboard = () => {
               </Card>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="modern-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Users className="w-5 h-5 mr-2 text-red-400" />
-                    Benutzerverwaltung
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Verwalten Sie Benutzerkonten und Berechtigungen
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                    onClick={() => toast.info('Benutzerverwaltung wird bald verfügbar sein')}
-                  >
-                    Benutzer verwalten
-                  </Button>
-                </CardContent>
-              </Card>
+            {/* Management Tabs */}
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-gray-900/50">
+                <TabsTrigger value="overview" className="text-white data-[state=active]:bg-red-900/50">
+                  Übersicht
+                </TabsTrigger>
+                <TabsTrigger value="projects" className="text-white data-[state=active]:bg-red-900/50">
+                  Projekte
+                </TabsTrigger>
+                <TabsTrigger value="services" className="text-white data-[state=active]:bg-red-900/50">
+                  Services
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="text-white data-[state=active]:bg-red-900/50">
+                  Einstellungen
+                </TabsTrigger>
+              </TabsList>
 
-              <Card className="modern-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Settings className="w-5 h-5 mr-2 text-red-400" />
-                    Service Management
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Services hinzufügen, bearbeiten oder entfernen
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                    onClick={() => toast.info('Service Management wird bald verfügbar sein')}
-                  >
-                    Services verwalten
-                  </Button>
-                </CardContent>
-              </Card>
+              <TabsContent value="overview" className="mt-6">
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Users className="w-5 h-5 mr-2 text-red-400" />
+                        Benutzerverwaltung
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Verwalten Sie Benutzerkonten und Berechtigungen
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('Benutzerverwaltung wird bald verfügbar sein')}
+                      >
+                        Benutzer verwalten
+                      </Button>
+                    </CardContent>
+                  </Card>
 
-              <Card className="modern-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <BarChart3 className="w-5 h-5 mr-2 text-red-400" />
-                    Analytics
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Website-Statistiken und Berichte
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                    onClick={() => toast.info('Analytics wird bald verfügbar sein')}
-                  >
-                    Berichte anzeigen
-                  </Button>
-                </CardContent>
-              </Card>
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <BarChart3 className="w-5 h-5 mr-2 text-red-400" />
+                        Analytics
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Website-Statistiken und Berichte
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
+                        onClick={() => toast.info('Analytics wird bald verfügbar sein')}
+                      >
+                        Berichte anzeigen
+                      </Button>
+                    </CardContent>
+                  </Card>
 
-              <Card className="modern-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Activity className="w-5 h-5 mr-2 text-red-400" />
-                    System Status
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Überwachen Sie die Systemleistung
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full modern-button-outline border-red-500/30 text-red-400 hover:bg-red-900/20"
-                    onClick={() => toast.info('System Status wird bald verfügbar sein')}
-                  >
-                    Status prüfen
-                  </Button>
-                </CardContent>
-              </Card>
+                  <Card className="modern-card hover-lift">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-white">
+                        <Shield className="w-5 h-5 mr-2 text-red-400" />
+                        Admin Setup
+                      </CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Admin-Berechtigung einrichten
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button 
+                        className="w-full modern-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
+                        onClick={setupFirstAdmin}
+                      >
+                        Admin einrichten
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
 
-              <Card className="modern-card hover-lift">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-white">
-                    <Shield className="w-5 h-5 mr-2 text-red-400" />
-                    Admin Setup
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    Admin-Berechtigung einrichten
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    className="w-full modern-button bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
-                    onClick={setupFirstAdmin}
-                  >
-                    Admin einrichten
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+              <TabsContent value="projects" className="mt-6">
+                <ProjectManagement />
+              </TabsContent>
+
+              <TabsContent value="services" className="mt-6">
+                <div className="text-center py-12">
+                  <p className="text-gray-400">Service-Verwaltung wird bald verfügbar sein.</p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="settings" className="mt-6">
+                <div className="text-center py-12">
+                  <p className="text-gray-400">Einstellungen werden bald verfügbar sein.</p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </>
         )}
       </div>

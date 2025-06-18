@@ -1,68 +1,42 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Code, Smartphone, Globe, Database, Cpu } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-const projects = [
-  {
-    id: 1,
-    title: "E-Commerce Platform",
-    description: "Vollständige E-Commerce-Lösung mit modernem Design und erweiterten Funktionen für Online-Händler.",
-    tags: ["React", "Node.js", "PostgreSQL", "Stripe"],
-    icon: Globe,
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop",
-    status: "Abgeschlossen"
-  },
-  {
-    id: 2,
-    title: "Mobile App Suite",
-    description: "Cross-Platform Mobile App für iOS und Android mit Cloud-Integration und Real-time Features.",
-    tags: ["React Native", "Firebase", "TypeScript", "Redux"],
-    icon: Smartphone,
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
-    status: "In Entwicklung"
-  },
-  {
-    id: 3,
-    title: "Data Analytics Dashboard",
-    description: "Interaktives Dashboard für Business Intelligence mit Echtzeitdaten und erweiterten Visualisierungen.",
-    tags: ["Python", "React", "D3.js", "MongoDB"],
-    icon: Database,
-    image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop",
-    status: "Abgeschlossen"
-  },
-  {
-    id: 4,
-    title: "IoT Management System",
-    description: "Umfassende IoT-Lösung zur Überwachung und Steuerung von Smart Devices in Unternehmen.",
-    tags: ["Vue.js", "MQTT", "InfluxDB", "Docker"],
-    icon: Cpu,
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=800&h=600&fit=crop",
-    status: "Planung"
-  },
-  {
-    id: 5,
-    title: "Enterprise Software",
-    description: "Maßgeschneiderte Enterprise-Lösung für Workflow-Management und Prozessoptimierung.",
-    tags: ["Angular", "Java", "Spring", "Oracle"],
-    icon: Code,
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop",
-    status: "In Entwicklung"
-  },
-  {
-    id: 6,
-    title: "Cloud Infrastructure",
-    description: "Skalierbare Cloud-Infrastruktur mit automatischer Bereitstellung und Monitoring.",
-    tags: ["AWS", "Kubernetes", "Terraform", "Prometheus"],
-    icon: Globe,
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop",
-    status: "Abgeschlossen"
-  }
-];
+const iconMap = {
+  "Web Development": Globe,
+  "Mobile Development": Smartphone,
+  "Data Science": Database,
+  "IoT": Cpu,
+  "Enterprise": Code,
+  "Cloud": Globe,
+  default: Code
+};
 
 export const Projects = () => {
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
+
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ['projects'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+      }
+      
+      return data || [];
+    }
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -76,6 +50,18 @@ export const Projects = () => {
         return "bg-gray-900/50 text-gray-400 border-gray-500/30";
     }
   };
+
+  if (isLoading) {
+    return (
+      <section id="projects" className="py-20 bg-black">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="projects" className="py-20 bg-black">
@@ -92,7 +78,7 @@ export const Projects = () => {
 
         <div ref={gridRef} className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal ${gridVisible ? 'revealed' : ''}`}>
           {projects.map((project, index) => {
-            const IconComponent = project.icon;
+            const IconComponent = iconMap[project.category as keyof typeof iconMap] || iconMap.default;
             return (
               <Card 
                 key={project.id} 
@@ -101,7 +87,7 @@ export const Projects = () => {
               >
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img 
-                    src={project.image} 
+                    src={project.image_url || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=600&fit=crop'} 
                     alt={project.title}
                     className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300 filter brightness-50 group-hover:brightness-75"
                   />
@@ -131,7 +117,7 @@ export const Projects = () => {
                     {project.description}
                   </CardDescription>
                   <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag) => (
+                    {project.tags?.map((tag: string) => (
                       <Badge 
                         key={tag} 
                         variant="secondary" 
