@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { User, Settings, Shield, LogOut, ChevronDown } from 'lucide-react';
+import { User, Settings, Shield, LogOut, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -122,8 +122,8 @@ export const ProfileDropdown = () => {
               className="text-red-400 hover:bg-red-900/20 hover:text-red-300 cursor-pointer"
               onClick={() => navigate('/admin')}
             >
-              <Shield className="mr-2 h-4 w-4" />
-              Admin Dashboard
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              Dashboard
             </DropdownMenuItem>
           </>
         )}
