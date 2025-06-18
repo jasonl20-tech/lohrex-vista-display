@@ -114,6 +114,54 @@ export type Database = {
         }
         Relationships: []
       }
+      service_items: {
+        Row: {
+          active: boolean | null
+          button_text: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          featured: boolean | null
+          icon: string | null
+          id: string
+          price: number | null
+          service_url: string | null
+          sort_order: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          button_text?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          icon?: string | null
+          id?: string
+          price?: number | null
+          service_url?: string | null
+          sort_order?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          button_text?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          featured?: boolean | null
+          icon?: string | null
+          id?: string
+          price?: number | null
+          service_url?: string | null
+          sort_order?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       services: {
         Row: {
           active: boolean | null

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Users, Settings, Database, Activity, BarChart3, Shield, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { Navigation } from '@/components/Navigation';
-import { ProjectManagement } from '@/components/admin/ProjectManagement';
+import { ProjectManagement, ServiceManagement } from '@/components/admin/ProjectManagement';
 
 const AdminDashboard = () => {
   const { user, isAdmin, loading } = useAuth();
@@ -73,11 +72,11 @@ const AdminDashboard = () => {
       
       const getServicesCount = async () => {
         try {
-          const { count, error } = await supabase.from('services').select('id', { count: 'exact' });
+          const { count, error } = await supabase.from('service_items').select('id', { count: 'exact' });
           if (error) throw error;
           return count || 0;
         } catch (err) {
-          console.log('Services table not accessible:', err);
+          console.log('Service items table not accessible:', err);
           return 0;
         }
       };
@@ -336,9 +335,7 @@ const AdminDashboard = () => {
               </TabsContent>
 
               <TabsContent value="services" className="mt-6">
-                <div className="text-center py-12">
-                  <p className="text-gray-400">Service-Verwaltung wird bald verfügbar sein.</p>
-                </div>
+                <ServiceManagement />
               </TabsContent>
 
               <TabsContent value="settings" className="mt-6">
