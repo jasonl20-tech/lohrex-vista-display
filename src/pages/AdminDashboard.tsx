@@ -17,57 +17,62 @@ const AdminDashboard = () => {
     totalServices: 0,
     totalImages: 0,
   });
-  const [dashboardLoading, setDashboardLoading] = useState(true);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
 
-  console.log('AdminDashboard render:', { user: user?.id, isAdmin, loading });
+  console.log('🎯 AdminDashboard render - User:', user?.id, 'isAdmin:', isAdmin, 'loading:', loading);
 
   useEffect(() => {
-    console.log('AdminDashboard useEffect:', { loading, user: user?.id, isAdmin });
+    console.log('🎯 AdminDashboard useEffect triggered:', { loading, hasUser: !!user, isAdmin });
     
+    // If still loading auth, wait
     if (loading) {
-      console.log('Still loading auth...');
+      console.log('🎯 Still loading auth, waiting...');
       return;
     }
 
+    // If no user after auth is loaded, redirect to auth
     if (!user) {
-      console.log('No user, redirecting to auth');
+      console.log('🎯 No user found, redirecting to auth');
       navigate('/auth');
       return;
     }
     
+    // If user but not admin, redirect to home
     if (!isAdmin) {
-      console.log('User is not admin, redirecting to home');
+      console.log('🎯 User is not admin, redirecting to home');
       toast.error('Sie haben keine Berechtigung für das Admin Dashboard');
       navigate('/');
       return;
     }
 
     // User is admin, load stats
-    console.log('User is admin, loading stats');
+    console.log('🎯 User is admin, loading dashboard stats');
     loadStats();
   }, [user, isAdmin, loading, navigate]);
 
   const loadStats = async () => {
     try {
-      console.log('Loading dashboard stats...');
+      console.log('🎯 Loading dashboard stats...');
       setDashboardLoading(true);
       
-      // Load stats with error handling
-      const [usersResult, servicesResult, imagesResult] = await Promise.allSettled([
-        supabase.from('profiles').select('id', { count: 'exact' }),
-        supabase.from('services').select('id', { count: 'exact' }),
-        supabase.from('gallery_images').select('id', { count: 'exact' })
-      ]);
+      // Try to load stats, but don't fail if tables don't exist
+      const promises = [
+        supabase.from('profiles').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0),
+        supabase.from('services').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0),
+        supabase.from('gallery_images').select('id', { count: 'exact' }).then(r => r.count || 0).catch(() => 0)
+      ];
 
-      console.log('Stats query results:', { usersResult, servicesResult, imagesResult });
+      const [totalUsers, totalServices, totalImages] = await Promise.all(promises);
+
+      console.log('🎯 Stats loaded:', { totalUsers, totalServices, totalImages });
 
       setStats({
-        totalUsers: usersResult.status === 'fulfilled' ? (usersResult.value.count || 0) : 0,
-        totalServices: servicesResult.status === 'fulfilled' ? (servicesResult.value.count || 0) : 0,
-        totalImages: imagesResult.status === 'fulfilled' ? (imagesResult.value.count || 0) : 0,
+        totalUsers,
+        totalServices,
+        totalImages,
       });
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error('🎯 Error loading stats:', error);
       toast.error('Fehler beim Laden der Statistiken');
     } finally {
       setDashboardLoading(false);
@@ -76,37 +81,42 @@ const AdminDashboard = () => {
 
   const setupFirstAdmin = async () => {
     try {
-      console.log('Setting up first admin...');
+      console.log('🎯 Setting up first admin...');
       const { error } = await supabase.rpc('setup_first_admin');
       if (error) {
-        console.error('RPC error:', error);
+        console.error('🎯 RPC error:', error);
         throw error;
       }
       toast.success('Admin-Setup abgeschlossen!');
     } catch (error) {
-      console.error('Error setting up admin:', error);
+      console.error('🎯 Error setting up admin:', error);
       toast.error('Fehler beim Admin-Setup: ' + error.message);
     }
   };
 
+  // Show loading screen while auth is still loading
   if (loading) {
-    console.log('Showing loading screen');
+    console.log('🎯 Showing loading screen');
     return (
       <div className="min-h-screen bg-background">
         <Navigation />
         <div className="min-h-screen flex items-center justify-center pt-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto mb-4"></div>
+            <p className="text-white">Lade Dashboard...</p>
+          </div>
         </div>
       </div>
     );
   }
 
+  // Don't render anything if redirecting (user will be null or not admin)
   if (!user || !isAdmin) {
-    console.log('Unauthorized access, should redirect');
+    console.log('🎯 User check failed, should redirect');
     return null;
   }
 
-  console.log('Rendering admin dashboard');
+  console.log('🎯 Rendering admin dashboard for user:', user.email);
 
   return (
     <div className="min-h-screen bg-background">
