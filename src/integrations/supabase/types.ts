@@ -73,8 +73,10 @@ export type Database = {
           created_at: string
           description: string | null
           featured: boolean | null
+          icon: string | null
           id: string
           image_url: string | null
+          project_url: string | null
           status: string | null
           tags: string[] | null
           title: string
@@ -86,8 +88,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          icon?: string | null
           id?: string
           image_url?: string | null
+          project_url?: string | null
           status?: string | null
           tags?: string[] | null
           title: string
@@ -99,8 +103,10 @@ export type Database = {
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          icon?: string | null
           id?: string
           image_url?: string | null
+          project_url?: string | null
           status?: string | null
           tags?: string[] | null
           title?: string

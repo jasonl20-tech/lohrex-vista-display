@@ -29,6 +29,22 @@ const iconMap = {
   default: Code
 };
 
+interface Project {
+  id: string;
+  title: string;
+  description: string;
+  tags: string[];
+  status: string;
+  category: string;
+  image_url: string;
+  featured: boolean;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+  icon: string;
+  project_url: string;
+}
+
 export const Projects = () => {
   const { ref: titleRef, isVisible: titleVisible } = useScrollAnimation();
   const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation();
@@ -48,7 +64,7 @@ export const Projects = () => {
         throw error;
       }
       
-      return data || [];
+      return data as Project[];
     }
   });
 

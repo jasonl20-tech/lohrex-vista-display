@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +21,8 @@ interface Project {
   active: boolean;
   created_at: string;
   updated_at: string;
+  icon: string;
+  project_url: string;
 }
 
 export const ProjectManagement = () => {
